@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'EnterPhoneNumber.dart'; // Si es necesario para los botones "Como tutor" y "Como estudiante"
+import 'Login.dart';
 
 class RoleSeparator extends StatefulWidget {
   const RoleSeparator({super.key});
@@ -51,7 +51,7 @@ class RoleSeparatorState extends State<RoleSeparator> {
                     // Navegar a EnterPhoneNumber
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const EnterPhoneNumber()),
+                      MaterialPageRoute(builder: (_) => Login()),
                     );
                   },
                   child: Container(
@@ -99,7 +99,7 @@ class RoleSeparatorState extends State<RoleSeparator> {
                     // Navegar a EnterPhoneNumber
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const EnterPhoneNumber()),
+                      MaterialPageRoute(builder: (_) => Login()),
                     );
                   },
                   child: Container(
