@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
@@ -7,7 +8,6 @@ import 'EnterPhoneNumber.dart';
 import 'FullName.dart';
 
 class CodeVerificaton extends StatefulWidget {
-  // Recibimos el código de país y el número desde EnterPhoneNumber
   final String countryCode;
   final String phoneNumber;
 
@@ -18,20 +18,63 @@ class CodeVerificaton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<CodeVerificaton> createState() => _CodeVerificationState();
+  State<CodeVerificaton> createState() => _CodeVerificatonState();
 }
 
-class _CodeVerificationState extends State<CodeVerificaton> {
-  // Controladores para cada dígito del código
+class _CodeVerificatonState extends State<CodeVerificaton> {
   final TextEditingController digit1Controller = TextEditingController();
   final TextEditingController digit2Controller = TextEditingController();
   final TextEditingController digit3Controller = TextEditingController();
   final TextEditingController digit4Controller = TextEditingController();
-  // Si necesitas 6 dígitos, descomenta estos:
-  // final TextEditingController digit5Controller = TextEditingController();
-  // final TextEditingController digit6Controller = TextEditingController();
 
-  // Función auxiliar para crear un TextField por dígito
+  // Código de verificación de prueba
+  final String testVerificationCode = "1234";
+
+  bool canResendCode = false;
+  int _secondsRemaining = 60;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    setState(() {
+      canResendCode = false;
+      _secondsRemaining = 60;
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_secondsRemaining > 0) {
+          _secondsRemaining--;
+        } else {
+          canResendCode = true;
+          _timer?.cancel();
+        }
+      });
+    });
+  }
+
+  String getEnteredCode() {
+    return digit1Controller.text +
+        digit2Controller.text +
+        digit3Controller.text +
+        digit4Controller.text;
+  }
+
+  bool isCodeComplete() {
+    return getEnteredCode().length == 4;
+  }
+
   Widget _buildDigitField(TextEditingController controller) {
     return Container(
       width: 45,
@@ -49,13 +92,13 @@ class _CodeVerificationState extends State<CodeVerificaton> {
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: const InputDecoration(
           border: InputBorder.none,
-          counterText: "", // Oculta el contador de caracteres
+          counterText: "",
         ),
         onChanged: (value) {
           if (value.isNotEmpty) {
-            // Mover el foco al siguiente TextField
             FocusScope.of(context).nextFocus();
           }
+          setState(() {});
         },
       ),
     );
@@ -63,8 +106,8 @@ class _CodeVerificationState extends State<CodeVerificaton> {
 
   @override
   Widget build(BuildContext context) {
-    // Prepara el número completo para mostrarlo
     final String fullNumber = "${widget.countryCode} ${widget.phoneNumber}";
+    final bool isCodeValid = getEnteredCode() == testVerificationCode;
 
     return Scaffold(
       body: SafeArea(
@@ -74,12 +117,12 @@ class _CodeVerificationState extends State<CodeVerificaton> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Botón "Atrás" en azul que regresa a EnterPhoneNumber ---
                 InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const EnterPhoneNumber()),
+                      MaterialPageRoute(
+                          builder: (_) => EnterPhoneNumber()),
                     );
                   },
                   child: Row(
@@ -96,7 +139,6 @@ class _CodeVerificationState extends State<CodeVerificaton> {
                 ),
                 const SizedBox(height: 30),
 
-                // --- Título ---
                 const Text(
                   "Verifica tu número",
                   style: TextStyle(
@@ -107,7 +149,6 @@ class _CodeVerificationState extends State<CodeVerificaton> {
                 ),
                 const SizedBox(height: 8),
 
-                // --- Descripción con el número al que se envió el código ---
                 Text(
                   "Hemos enviado un código al número $fullNumber",
                   style: const TextStyle(
@@ -117,7 +158,6 @@ class _CodeVerificationState extends State<CodeVerificaton> {
                 ),
                 const SizedBox(height: 30),
 
-                // --- Fila de TextFields para el código ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -125,40 +165,41 @@ class _CodeVerificationState extends State<CodeVerificaton> {
                     _buildDigitField(digit2Controller),
                     _buildDigitField(digit3Controller),
                     _buildDigitField(digit4Controller),
-                    // Descomenta si necesitas 6 dígitos:
-                    // _buildDigitField(digit5Controller),
-                    // _buildDigitField(digit6Controller),
                   ],
                 ),
                 const SizedBox(height: 30),
 
-                // --- Botón "Continuar" que lleva a FullName ---
                 InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const FullName()),
-                    );
-                  },
+                  onTap: isCodeValid
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const FullName()),
+                          );
+                        }
+                      : null,
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: const Color(0xFF0760FB),
+                      color: isCodeValid
+                          ? const Color(0xFF0760FB)
+                          : Colors.grey,
                       boxShadow: [
-                        BoxShadow(
-                          color: const Color(0x26000000),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
+                        if (isCodeValid)
+                          const BoxShadow(
+                            color: Color(0x26000000),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
                       ],
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     width: double.infinity,
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         "Continuar",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: isCodeValid ? Colors.white : Colors.black,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -168,7 +209,6 @@ class _CodeVerificationState extends State<CodeVerificaton> {
                 ),
                 const SizedBox(height: 20),
 
-                // --- "Vuelve a enviarlo" en azul (acción comentada) ---
                 Center(
                   child: RichText(
                     text: TextSpan(
@@ -180,18 +220,21 @@ class _CodeVerificationState extends State<CodeVerificaton> {
                       ),
                       children: [
                         TextSpan(
-                          text: "Vuelve a enviarlo",
+                          text: canResendCode
+                              ? "Vuelve a intentarlo"
+                              : "Vuelve a intentarlo en $_secondsRemaining s",
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
                           ),
                           recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // Aquí iría la lógica para reenviar el código
-                              // Por ejemplo, llamar a tu backend o servicio de SMS
-                              // Navigator.push(...);
-                            },
+                            ..onTap = canResendCode
+                                ? () {
+                                    // Aquí iría la lógica para reenviar el código
+                                    _startTimer();
+                                  }
+                                : null,
                         ),
                       ],
                     ),
@@ -199,7 +242,6 @@ class _CodeVerificationState extends State<CodeVerificaton> {
                 ),
                 const SizedBox(height: 30),
 
-                // --- Barra decorativa inferior ---
                 Center(
                   child: Container(
                     decoration: BoxDecoration(

@@ -153,16 +153,17 @@ class _VerificationCodeforResetPasswordState extends State<VerificationCodeforRe
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-// import 'ResetPassword.dart'; // Descomenta cuando esté listo
+import 'ResetPassword.dart';
 //import 'VerificationforResetPassword.dart';
 
 class VerificationCodeforResetPassword extends StatefulWidget {
   final String verificationId;
   final String phoneNumber;
 
-  VerificationCodeforResetPassword({required this.verificationId, required this.phoneNumber});
+  const VerificationCodeforResetPassword({super.key, required this.verificationId, required this.phoneNumber});
 
   @override
+  // ignore: library_private_types_in_public_api
   _VerificationCodeforResetPasswordState createState() => _VerificationCodeforResetPasswordState();
 }
 
@@ -213,7 +214,7 @@ class _VerificationCodeforResetPasswordState extends State<VerificationCodeforRe
       
       // Navegar a la pantalla de restablecimiento de contraseña
       // Descomenta cuando ResetPassword esté listo
-      // Navigator.push(context, MaterialPageRoute(builder: (_) => ResetPassword()));
+       Navigator.push(context, MaterialPageRoute(builder: (_) => ResetPassword()));
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Código correcto, redirigiendo...')),
