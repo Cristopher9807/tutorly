@@ -156,15 +156,7 @@ class Onboarding2State extends State<Onboarding2> {
 
               const SizedBox(height: 30),
 
-              // --- BARRA DECORATIVA INFERIOR (OPCIONAL) ---
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: const Color(0xFFCDE6FE),
-                ),
-                width: 132,
-                height: 6,
-              ),
+              
               const SizedBox(height: 20),
             ],
           ),

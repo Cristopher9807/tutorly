@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'Login.dart';
 
 class RoleSeparator extends StatefulWidget {
@@ -12,34 +11,39 @@ class RoleSeparator extends StatefulWidget {
 class RoleSeparatorState extends State<RoleSeparator> {
   @override
   Widget build(BuildContext context) {
+    // Obtener dimensiones de la pantalla
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double textSize = screenWidth * 0.05; // Escalar texto según ancho de pantalla
+    double buttonWidth = screenWidth * 0.6; // Botones ocupan 60% del ancho
+    double buttonHeight = screenHeight * 0.07; // Altura del botón relativa a la pantalla
+
     return Scaffold(
       body: SafeArea(
-        // SingleChildScrollView permite que el contenido se desplace en pantallas pequeñas
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Center( // Centra el contenido en la pantalla
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Se elimina la barra superior (hora, batería, señal)
-
-                const SizedBox(height: 40),
-
                 // --- TÍTULO DE BIENVENIDA ---
                 Text(
-                  "¡Bienvenidos a Tutorly!\n¿Te gustaría unirte a nosotros?",
-                  style: const TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 18,
+                  "¡Bienvenidos a Tutorly!\nEmpieza tu enseñanza o únetenos",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: const Color(0xFF0F172A),
+                    fontSize: textSize * 1.2,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 Text(
                   "Seleccione una opción de las siguientes",
-                  style: const TextStyle(
-                    color: Color(0xFF475569),
-                    fontSize: 14,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 0, 0, 0),
+                    fontSize: textSize * 0.8,
                   ),
                 ),
 
@@ -48,44 +52,37 @@ class RoleSeparatorState extends State<RoleSeparator> {
                 // --- BOTÓN "Como tutor" ---
                 InkWell(
                   onTap: () {
-                    // Navegar a EnterPhoneNumber
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => Login()),
                     );
                   },
                   child: Container(
+                    width: buttonWidth, // Tamaño adaptable
+                    height: buttonHeight, // Altura adaptable
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFFCBD5E1),
-                        width: 1,
-                      ),
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
+                      color: const Color(0xFF0760FB),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0x12344054),
-                          blurRadius: 2,
-                          offset: const Offset(0, 1),
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-                    margin: const EdgeInsets.only(bottom: 12),
+                    alignment: Alignment.center,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "👨‍🏫",
-                          style: TextStyle(
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 9),
-                        const Text(
+                        const Text("👨‍🏫", style: TextStyle(fontSize: 24)),
+                        const SizedBox(width: 10),
+                        Text(
                           "Como tutor",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
+                            color: Colors.white,
+                            fontSize: textSize,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -93,43 +90,41 @@ class RoleSeparatorState extends State<RoleSeparator> {
                   ),
                 ),
 
+                const SizedBox(height: 20),
+
                 // --- BOTÓN "Como estudiante" ---
                 InkWell(
                   onTap: () {
-                    // Navegar a EnterPhoneNumber
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => Login()),
                     );
                   },
                   child: Container(
+                    width: buttonWidth,
+                    height: buttonHeight,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                       color: const Color(0xFF0760FB),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0x26000000),
+                          color: Colors.black26,
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                    alignment: Alignment.center,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "👨‍🎓",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 11),
-                        const Text(
+                        const Text("👨‍🎓", style: TextStyle(fontSize: 24)),
+                        const SizedBox(width: 10),
+                        Text(
                           "Como estudiante",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: textSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -139,54 +134,6 @@ class RoleSeparatorState extends State<RoleSeparator> {
                 ),
 
                 const SizedBox(height: 40),
-
-                // --- LINK "Iniciar sesión" ---
-                Center(
-                  child: RichText(
-                    text: TextSpan(
-                      text: "¿Ya tienes una cuenta? ",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Iniciar sesión",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // Navegar a la pantalla de iniciar sesión
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(builder: (_) => SomeLoginScreen()),
-                              // );
-                            },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // --- BARRA DECORATIVA INFERIOR ---
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: const Color(0xFFE2E8F0),
-                    ),
-                    width: 132,
-                    height: 6,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
               ],
             ),
           ),

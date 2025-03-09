@@ -97,15 +97,7 @@ class CongratsState extends State<Congrats> {
                 ),
                 const SizedBox(height: 30),
 
-                // Barra decorativa inferior (opcional)
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(31),
-                    color: const Color(0xFFE2E8F0),
-                  ),
-                  width: 136,
-                  height: 5,
-                ),
+               
                 const SizedBox(height: 20),
               ],
             ),

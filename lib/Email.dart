@@ -132,7 +132,7 @@ class EmailState extends State<Email> {
                 const SizedBox(height: 20),
 
                 // Enlace "¿Ya tienes una cuenta? Iniciar sesión" en azul (acción comentada)
-                Center(
+                /*Center(
                   child: RichText(
                     text: TextSpan(
                       text: "¿Ya tienes una cuenta? ",
@@ -158,20 +158,10 @@ class EmailState extends State<Email> {
                       ],
                     ),
                   ),
-                ),
+                ),*/
                 const SizedBox(height: 30),
 
-                // Barra decorativa inferior (opcional)
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: const Color(0xFFE2E8F0),
-                    ),
-                    width: 132,
-                    height: 6,
-                  ),
-                ),
+                
                 const SizedBox(height: 20),
               ],
             ),

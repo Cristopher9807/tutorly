@@ -153,15 +153,7 @@ class Onboarding3State extends State<Onboarding3> {
               ),
               const SizedBox(height: 30),
 
-              // Barra decorativa inferior (opcional)
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: const Color(0xFFCDE6FE),
-                ),
-                width: 132,
-                height: 6,
-              ),
+              
               const SizedBox(height: 20),
             ],
           ),

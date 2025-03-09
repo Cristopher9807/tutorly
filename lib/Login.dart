@@ -24,11 +24,11 @@ class _LoginState extends State<Login> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/logo.png', height: 200), // Ajusta el logo según sea necesario
+                Image.asset('assets/logo.png', height: 250), // Ajusta el logo según sea necesario
                 const SizedBox(height: 20),
                 const Text(
                   'Iniciar Sesión',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orange),
+                  style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 153, 0)),
                 ),
                 const SizedBox(height: 20),
                 TextField(

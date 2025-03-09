@@ -242,16 +242,7 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                 ),
                 const SizedBox(height: 30),
 
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: const Color(0xFFE2E8F0),
-                    ),
-                    width: 132,
-                    height: 6,
-                  ),
-                ),
+               
                 const SizedBox(height: 20),
               ],
             ),

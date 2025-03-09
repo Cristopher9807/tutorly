@@ -11,14 +11,15 @@ class Education extends StatefulWidget {
 }
 
 class EducationState extends State<Education> {
-  // Controlador para el campo de Identificación universitaria
   final TextEditingController idController = TextEditingController();
+  final TextEditingController customSpecialtyController = TextEditingController();
+  final TextEditingController customUniversityController = TextEditingController();
 
-  // Variables para los dropdowns
   String selectedSpecialty = "Ingeniería Informática";
   String selectedUniversity = "Harvard University";
+  bool showCustomSpecialtyField = false;
+  bool showCustomUniversityField = false;
 
-  // Listado de especialidades
   final List<String> specialties = [
     "Ingeniería Informática",
     "Ingeniería Industrial",
@@ -33,24 +34,48 @@ class EducationState extends State<Education> {
     "No encuentro mi Especialidad",
   ];
 
-  // Listado de universidades (de España, Rep. Dom, EEUU, México y Canadá)
   final List<String> universities = [
     "Harvard University",
     "Stanford University",
     "Massachusetts Institute of Technology",
-    "Universidad Autónoma de Santo Domingo",
-    "Pontificia Universidad Católica Madre y Maestra",
-    "Universidad Nacional Autónoma de México",
-    "Instituto Tecnológico y de Estudios Superiores de Monterrey",
-    "University of Toronto",
-    "University of British Columbia",
-    "Universidad de Barcelona",
-    "Universidad Complutense de Madrid",
+    "Universidad Autónoma de Santo Domingo (UASD)",
+    "Pontificia Universidad Católica Madre y Maestra (PUCMM)",
+    "Universidad Nacional Pedro Henríquez Ureña (UNPHU)",
+    "Instituto Tecnológico de Santo Domingo (INTEC)",
+    "Universidad APEC (UNAPEC)",
+    "Universidad Central del Este (UCE)",
+    "Universidad Tecnológica de Santiago (UTESA)",
+    "Universidad Católica Santo Domingo (UCSD)",
+    "Universidad Iberoamericana (UNIBE)",
+    "Universidad Nacional Evangélica (UNEV)",
+    "Universidad Abierta para Adultos (UAPA)",
+    "Universidad Católica Nordestana (UCNE)",
+    "Universidad Católica Tecnológica de Barahona (UCATEBA)",
+    "Universidad Federico Henríquez y Carvajal (UFHEC)",
+    "Universidad Tecnológica del Sur (UTESUR)",
+    "Universidad ISA",
+    "Universidad Agroforestal Fernando Arturo de Meriño (UAFAM)",
+    "Universidad Odontológica Dominicana (UOD)",
+    "Universidad Eugenio María de Hostos (UNIREMHOS)",
+    "Universidad Experimental Félix Adam (UNEFA)",
+    "Universidad Nacional Tecnológica (UNNATEC)",
+    "Universidad Psicología Industrial Dominicana (UPID)",
+    "Universidad Dominicana Organización y Método (O&M)",
+    "Universidad del Caribe (UNICARIBE)",
+    "Universidad de la Tercera Edad (UTE)",
+    "Universidad Interamericana (UNICA)",
+    "Universidad Central Dominicana de Estudios Profesionales (UCDEP)",
+    "Universidad Domínico-Americana (UNICDA)",
+    "Universidad Adventista Dominicana (UNAD)",
+    "Universidad Católica del Cibao (UCATECI)",
+    "Instituto Tecnológico del Cibao Oriental (ITECO)",
+    "Instituto Especializado de Estudios Superiores Loyola (IEESL)",
+    "Instituto Tecnológico de Las Américas (ITLA)",
     "No encuentro mi Institución",
   ];
 
-  // La forma es válida si el campo de identificación no está vacío.
-  bool get isFormValid => idController.text.isNotEmpty &&
+    bool get isFormValid =>
+      idController.text.isNotEmpty &&
       selectedSpecialty.isNotEmpty &&
       selectedUniversity.isNotEmpty;
 
@@ -58,165 +83,185 @@ class EducationState extends State<Education> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        // Permite desplazarse en pantallas pequeñas
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Botón "Atrás" en azul, que lleva a Email.dart
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const Email()),
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.arrow_back, color: Colors.blue),
-                      SizedBox(width: 8),
-                      Text(
-                        "Atrás",
-                        style: TextStyle(color: Colors.blue, fontSize: 14),
-                      ),
-                    ],
-                  ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Botón "Atrás"
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const Email()),
+                  );
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.arrow_back, color: Colors.blue),
+                    SizedBox(width: 8),
+                    Text("Atrás", style: TextStyle(color: Colors.blue, fontSize: 14)),
+                  ],
                 ),
-                const SizedBox(height: 30),
+              ),
+              const SizedBox(height: 20),
 
-                // Título y subtítulo
-                const Text(
-                  "Tu educación",
-                  style: TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+              // Título
+              const Text(
+                "Tu educación",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Proporcione su información educativa",
-                  style: TextStyle(
-                    color: Color(0xFF475569),
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 30),
+              ),
+              const SizedBox(height: 8),
 
-                // Campo: Identificación universitaria (solo números)
-                const Text(
-                  "Identificación universitaria",
-                  style: TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+              // Subtítulo
+              const Text(
+                "Proporcione su información educativa",
+                style: TextStyle(
+                  fontSize: 17,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Campo: Identificación universitaria
+              TextField(
+                controller: idController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  labelText: "Identificación universitaria",
+                  hintText: "189204 8923", // Como en la imagen
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCBD5E1), width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-                  child: TextField(
-                    controller: idController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    decoration: const InputDecoration(
-                      hintText: "Solo números",
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (value) {
-                      setState(() {}); // Actualiza la validez del formulario
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 20),
+
+              // Etiqueta "Especialidad"
+              const Text(
+                "Especialidad",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Dropdown: Especialidad
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selectedSpecialty,
+                    isExpanded: true,
+                    icon: const Icon(Icons.arrow_drop_down),
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedSpecialty = newValue!;
+                        showCustomSpecialtyField = newValue == "No encuentro mi Especialidad";
+                      });
                     },
+                    items: specialties.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // Dropdown: Especialidad
-                const Text(
-                  "Especialidad",
-                  style: TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCBD5E1), width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      value: selectedSpecialty,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedSpecialty = newValue!;
-                        });
-                      },
-                      items: specialties.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value, style: const TextStyle(fontSize: 14)),
-                        );
-                      }).toList(),
+              ),
+              if (showCustomSpecialtyField) ...[
+                const SizedBox(height: 8),
+                TextField(
+                  controller: customSpecialtyController,
+                  decoration: InputDecoration(
+                    hintText: "Ingrese su especialidad",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+              ],
+              const SizedBox(height: 20),
 
-                // Dropdown: Universidad
-                const Text(
-                  "Universidad",
-                  style: TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+              // Etiqueta "Universidad"
+              const Text(
+                "Universidad",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Dropdown: Universidad
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selectedUniversity,
+                    isExpanded: true,
+                    icon: const Icon(Icons.arrow_drop_down),
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedUniversity = newValue!;
+                        showCustomUniversityField = newValue == "No encuentro mi Institución";
+                      });
+                    },
+                    items: universities.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCBD5E1), width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      value: selectedUniversity,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedUniversity = newValue!;
-                        });
-                      },
-                      items: universities.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value, style: const TextStyle(fontSize: 14)),
-                        );
-                      }).toList(),
+              ),
+              if (showCustomUniversityField) ...[
+                const SizedBox(height: 8),
+                TextField(
+                  controller: customUniversityController,
+                  decoration: InputDecoration(
+                    hintText: "Ingrese su institución",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+              ],
+              const SizedBox(height: 30),
 
-                // Botón "Continuar" (activo solo si el campo de identificación no está vacío)
-                InkWell(
-                  onTap: isFormValid
+              // Botón "Continuar"
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: isFormValid
                       ? () {
                           Navigator.push(
                             context,
@@ -224,48 +269,13 @@ class EducationState extends State<Education> {
                           );
                         }
                       : null,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: isFormValid ? const Color(0xFF0760FB) : Colors.grey,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x26000000),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    width: double.infinity,
-                    child: const Center(
-                      child: Text(
-                        "Continuar",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                  child: const Text(
+                    "Continuar",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-                const SizedBox(height: 30),
-
-                // Barra decorativa inferior (opcional)
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: const Color(0xFFE2E8F0),
-                    ),
-                    width: 132,
-                    height: 6,
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
