@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'EnterPhoneNumber.dart';
 import 'VerificationforResetPassword.dart';
-// import 'homePage.dart'; // Esta línea queda comentada por ahora
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -9,10 +10,58 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool rememberMe = false;
   bool obscurePassword = true;
+
+  Future<void> _login() async {
+    try {
+      final String email = emailController.text.trim();
+      final String password = passwordController.text.trim();
+
+      if (email.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Por favor, llena todos los campos'), backgroundColor: Colors.red),
+        );
+        return;
+      }
+
+      print("🟢 Intentando iniciar sesión con: $email");
+
+      // 🔹 Intentar iniciar sesión con Firebase Authentication
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      print("✅ Usuario autenticado: ${userCredential.user?.uid}");
+
+      // 🔍 Buscar en Firestore por el email
+      QuerySnapshot userQuery = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isNotEmpty) {
+        print("✅ Usuario encontrado en Firestore");
+        Navigator.pushNamed(context, 'Congrats');
+      } else {
+        print("❌ Usuario NO encontrado en Firestore");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Usuario no encontrado en la base de datos.'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      print("❌ Error al iniciar sesión: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al iniciar sesión: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +73,7 @@ class _LoginState extends State<Login> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/logo.png', height: 250), // Ajusta el logo según sea necesario
+                Image.asset('assets/logo.png', height: 250),
                 const SizedBox(height: 20),
                 const Text(
                   'Iniciar Sesión',
@@ -48,9 +97,7 @@ class _LoginState extends State<Login> {
                     prefixIcon: const Icon(Icons.lock),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
-                      icon: Icon(
-                        obscurePassword ? Icons.visibility : Icons.visibility_off,
-                      ),
+                      icon: Icon(obscurePassword ? Icons.visibility : Icons.visibility_off),
                       onPressed: () {
                         setState(() {
                           obscurePassword = !obscurePassword;
@@ -72,7 +119,6 @@ class _LoginState extends State<Login> {
                             setState(() {
                               rememberMe = value ?? false;
                             });
-                            // Aquí se puede agregar la lógica para recordar credenciales
                           },
                         ),
                         const Text('Acuérdate de mí'),
@@ -93,9 +139,7 @@ class _LoginState extends State<Login> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-                    },
+                    onPressed: _login,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       backgroundColor: Colors.blue,

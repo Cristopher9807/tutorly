@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tutorly/Congrats.dart';
 import 'Intro.dart'; // Asegúrate de que este archivo esté en la misma carpeta o ajusta la ruta.
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -11,6 +12,7 @@ void main() async{
   runApp(const MainApp());
 }
 
+
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
@@ -19,6 +21,10 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const Intro(),
+      routes: {
+        'homePage': (context) => Congrats(),
+      },
+
     );
   }
 }
