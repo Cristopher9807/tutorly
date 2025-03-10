@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'Intro.dart'; // Asegúrate de que este archivo esté en la misma carpeta o ajusta la ruta.
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
