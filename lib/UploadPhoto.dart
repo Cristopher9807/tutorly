@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'Education.dart';
 import 'Congrats.dart';
+import 'Intro.dart';
 
 class UploadPhoto extends StatefulWidget {
   const UploadPhoto({super.key});
@@ -42,7 +43,8 @@ class UploadPhotoState extends State<UploadPhoto> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const Education()),
+                        MaterialPageRoute(builder: (_) => const Intro()),                        
+                        //MaterialPageRoute(builder: (_) => const Education()),
                       );
                     },
                     child: Row(

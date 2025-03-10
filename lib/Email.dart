@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'Education.dart';
 import 'FullName.dart';
@@ -162,6 +162,153 @@ class EmailState extends State<Email> {
                 const SizedBox(height: 30),
 
                 
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+*/
+
+
+
+
+
+
+
+import 'package:flutter/material.dart';
+import 'Education.dart';
+import 'FullName.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Email extends StatefulWidget {
+  final String phoneNumber; // Agrega el número de teléfono
+
+  const Email({Key? key, required this.phoneNumber}) : super(key: key); // Modifica el constructor
+
+  @override
+  EmailState createState() => EmailState();
+}
+
+class EmailState extends State<Email> {
+  String email = '';
+
+  @override
+  Widget build(BuildContext context) {
+    bool isEmailFilled = email.isNotEmpty;
+
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => FullName(phoneNumber: widget.phoneNumber)), // Pasa el número de teléfono
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.arrow_back, color: Colors.blue),
+                      SizedBox(width: 8),
+                      Text(
+                        "Atrás",
+                        style: TextStyle(color: Colors.blue, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+                const Text(
+                  "¿Cuál es tu correo electrónico?",
+                  style: TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                const Text(
+                  "Correo electrónico",
+                  style: TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color(0xFFCBD5E1), width: 1),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: TextField(
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "ejemplo@dominio.com",
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+                InkWell(
+                  onTap: isEmailFilled
+                      ? () async {
+                          await FirebaseFirestore.instance.collection('users').doc(widget.phoneNumber).set({
+                            'email': email,
+                          }, SetOptions(merge: true));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => Education(phoneNumber: widget.phoneNumber)), // Pasa el número de teléfono
+                          );
+                        }
+                      : null,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: isEmailFilled ? const Color(0xFF0760FB) : Colors.grey,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x26000000),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    width: double.infinity,
+                    child: const Center(
+                      child: Text(
+                        "Continuar",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 20),
               ],
             ),

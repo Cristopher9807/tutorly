@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'EnterPhoneNumber.dart';
 import 'VerificationforResetPassword.dart';
+import 'Intro.dart';
+
 // import 'homePage.dart'; // Esta línea queda comentada por ahora
 
 class Login extends StatefulWidget {
@@ -115,7 +117,9 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => EnterPhoneNumber()),
+                          MaterialPageRoute(builder: (context) => Intro()),
+                          //MaterialPageRoute(builder: (context) => EnterPhoneNumber()),
+
                         );
                       },
                       child: const Text('Regístrate aquí'),
