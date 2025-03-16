@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:tutorly/Congrats.dart';
+/*import 'package:flutter/material.dart';
 import 'Intro.dart'; // Asegúrate de que este archivo esté en la misma carpeta o ajusta la ruta.
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform, // Importante si usas FlutterFire CLI
   );
-  runApp(const MainApp());
+  runApp(MainApp());
 }
 
 
@@ -21,10 +20,38 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const Intro(),
-      routes: {
-        'homePage': (context) => Congrats(),
-      },
+    );
+  }
+}*/
 
+
+import 'package:flutter/material.dart';
+import 'package:tutorly/Onboarding1.dart';
+//import 'Intro.dart'; // Asegúrate de que este archivo esté en la misma carpeta o ajusta la ruta.
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+//import 'login.dart';
+import 'Congrats.dart';
+  // Asegúrate de que este archivo esté en la misma carpeta o ajusta la ruta.
+//import 'Congrats.dart'; // Asegúrate de que este archivo esté en la misma carpeta o ajusta la ruta.
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MainApp());
+}
+
+class MainApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter App',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Onboarding1(),
+        '/Congrats': (context) => Congrats(), 
+      },
     );
   }
 }

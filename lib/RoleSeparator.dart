@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Login.dart';
+import 'login.dart';
 
 class RoleSeparator extends StatefulWidget {
   const RoleSeparator({super.key});
@@ -62,7 +62,7 @@ class RoleSeparatorState extends State<RoleSeparator> {
                     height: buttonHeight, // Altura adaptable
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFF0760FB),
+                      color: Colors.white,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black26,
@@ -80,7 +80,7 @@ class RoleSeparatorState extends State<RoleSeparator> {
                         Text(
                           "Como tutor",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: const Color(0xFF0760FB),
                             fontSize: textSize,
                             fontWeight: FontWeight.bold,
                           ),

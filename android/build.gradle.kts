@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.google.gms:google-services:3.24.1") // Correct Kotlin DSL syntax
+        classpath("com.google.gms:google-services:4.3.10") // Correct Kotlin DSL syntax
     }
 }
 

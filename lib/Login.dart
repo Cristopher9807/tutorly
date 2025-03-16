@@ -5,8 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});  // ✅ CORRECTO
   @override
-  _LoginState createState() => _LoginState();
+  State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
@@ -17,19 +18,23 @@ class _LoginState extends State<Login> {
   bool rememberMe = false;
   bool obscurePassword = true;
 
-  Future<void> _login() async {
+ /* Future<void> _login() async {
     try {
       final String email = emailController.text.trim();
       final String password = passwordController.text.trim();
 
       if (email.isEmpty || password.isEmpty) {
+        if (!mounted) return; // Verifica si el widget sigue montado
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Por favor, llena todos los campos'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Por favor, llena todos los campos'),
+            backgroundColor: Colors.red,
+          ),
         );
         return;
       }
 
-      print("🟢 Intentando iniciar sesión con: $email");
+      debugPrint("🟢 Intentando iniciar sesión con: $email");
 
       // 🔹 Intentar iniciar sesión con Firebase Authentication
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -37,7 +42,7 @@ class _LoginState extends State<Login> {
         password: password,
       );
 
-      print("✅ Usuario autenticado: ${userCredential.user?.uid}");
+      debugPrint("✅ Usuario autenticado: ${userCredential.user?.uid}");
 
       // 🔍 Buscar en Firestore por el email
       QuerySnapshot userQuery = await _firestore
@@ -46,22 +51,105 @@ class _LoginState extends State<Login> {
           .limit(1)
           .get();
 
+      if (!mounted) return; // ⚠️ Verifica antes de usar `context`
+
       if (userQuery.docs.isNotEmpty) {
-        print("✅ Usuario encontrado en Firestore");
-        Navigator.pushNamed(context, 'Congrats');
+        debugPrint("✅ Usuario encontrado en Firestore");
+        Navigator.pushNamed(context, '/Congrats');
       } else {
-        print("❌ Usuario NO encontrado en Firestore");
+        debugPrint("❌ Usuario NO encontrado en Firestore");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuario no encontrado en la base de datos.'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Usuario no encontrado en la base de datos.'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
-      print("❌ Error al iniciar sesión: $e");
+      debugPrint("❌ Error al iniciar sesión: $e");
+
+      if (!mounted) return; // ⚠️ Verifica antes de usar `context`
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al iniciar sesión: $e'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Error al iniciar sesión: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
+*/
+
+Future<void> _login() async {
+  try {
+    final String email = emailController.text.trim();
+    final String password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, llena todos los campos'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    debugPrint("🟢 Intentando iniciar sesión con: $email");
+
+    // 🔹 Intentar iniciar sesión con Firebase Authentication
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    debugPrint("✅ Usuario autenticado: ${userCredential.user?.uid}");
+
+    // 🔍 Verificar en Firestore
+    QuerySnapshot userQuery = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email.toLowerCase())
+        .limit(1)
+        .get();
+
+    if (!mounted) return;
+
+    if (userQuery.docs.isNotEmpty) {
+      debugPrint("✅ Usuario encontrado en Firestore: ${userQuery.docs.first.data()}"); // Primero imprime el mensaje
+      await Future.delayed(Duration(milliseconds: 200)); // Pequeña pausa para asegurarse de que se imprima
+      Navigator.pushNamed(context, '/Congrats'); // Luego navega a la otra pantalla
+    } else {
+      debugPrint("❌ Usuario NO encontrado en Firestore. Verifica si el email está bien escrito.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Usuario no encontrado en la base de datos.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+  debugPrint("❌ Error al iniciar sesión: $e");
+
+  if (!mounted) return;
+
+  String errorMessage = "Error al iniciar sesión.";
+  if (e is FirebaseAuthException) {
+    if (e.code == "invalid-credential") {
+      errorMessage = "Correo o contraseña incorrectos.";
+    }
+  }
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(errorMessage),
+      backgroundColor: Colors.red,
+    ),
+  );
+}
+
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -93,11 +181,11 @@ class _LoginState extends State<Login> {
                 TextField(
                   controller: passwordController,
                   decoration: InputDecoration(
-                    labelText: 'Contraseña',
+                    labelText: 'Contraseñas',
                     prefixIcon: const Icon(Icons.lock),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
-                      icon: Icon(obscurePassword ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
                       onPressed: () {
                         setState(() {
                           obscurePassword = !obscurePassword;

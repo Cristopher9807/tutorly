@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Login.dart'; // Importar la pantalla de inicio de sesión
+import 'login.dart'; // Importar la pantalla de inicio de sesión
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});

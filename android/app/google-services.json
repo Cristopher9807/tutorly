@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "457440405237",
+    "firebase_url": "https://tutorly-fb826-default-rtdb.firebaseio.com",
     "project_id": "tutorly-fb826",
     "storage_bucket": "tutorly-fb826.firebasestorage.app"
   },

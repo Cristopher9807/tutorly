@@ -47,5 +47,4 @@ flutter {
 }
 
 
-// 🔥 **IMPORTANTE**: Asegúrate de agregar esta línea AL FINAL del archivo.
 apply(plugin = "com.google.gms.google-services") // ✅ Necesario para Firebase

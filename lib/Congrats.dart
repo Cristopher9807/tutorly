@@ -52,7 +52,7 @@ class CongratsState extends State<Congrats> {
                 
                 // Texto de descripción
                 const Text(
-                  "Te has registrado correctamente. Ve a la página de inicio y empieza a explorar los cursos.",
+                  "Has ingresado correctamente. Ve a la página de inicio y empieza a explorar los cursos.",
                   style: TextStyle(
                     color: Color(0xFF475569),
                     fontSize: 14,

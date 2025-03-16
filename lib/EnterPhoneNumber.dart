@@ -235,12 +235,11 @@ class EnterPhoneNumberState extends State<EnterPhoneNumber> {
 }
 */
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'Login.dart';
+import 'login.dart';
 import 'CodeVerificaton.dart';
 
 class EnterPhoneNumber extends StatefulWidget {

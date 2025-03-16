@@ -141,7 +141,7 @@ class UploadPhotoState extends State<UploadPhoto> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const Congrats()),
+                            MaterialPageRoute(builder: (context) => Congrats()),
                           );
                         },
                         child: Container(
