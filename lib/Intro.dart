@@ -4,10 +4,10 @@ import 'Onboarding1.dart';
 class Intro extends StatefulWidget {
   const Intro({super.key});
   @override
-  _IntroState createState() => _IntroState();
+  IntroState createState() => IntroState();
 }
 
-class _IntroState extends State<Intro> {
+class IntroState extends State<Intro> {
   @override
   void initState() {
     super.initState();

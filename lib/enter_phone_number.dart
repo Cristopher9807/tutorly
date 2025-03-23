@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/services.dart';
-import 'Login.dart';
-import 'CodeVerificaton.dart';
+import 'login.dart';
+import 'code_verificaton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
@@ -240,7 +240,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login.dart';
-import 'CodeVerificaton.dart';
+import 'code_verificaton.dart';
 
 class EnterPhoneNumber extends StatefulWidget {
   const EnterPhoneNumber({super.key});

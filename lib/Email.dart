@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'Education.dart';
-import 'FullName.dart';
+//import 'package:flutter/gestures.dart';
+import 'education.dart';
+import 'full_name.dart';
 
 class Email extends StatefulWidget {
   const Email({super.key});
@@ -26,7 +26,7 @@ class EmailState extends State<Email> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Botón "Atrás" en azul que lleva a CodeVerificaton.dart
+                // Botón "Atrás" en azul que lleva a code_verificaton.dart
                 InkWell(
                   onTap: () {
                     Navigator.push(

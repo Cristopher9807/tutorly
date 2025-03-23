@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'CodeVerificaton.dart';
+import 'code_verificaton.dart';
 import 'Email.dart';
 
 class FullName extends StatefulWidget {
@@ -24,7 +24,7 @@ class FullNameState extends State<FullName> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Botón "Atrás" en azul que navega a CodeVerificaton.dart
+                // Botón "Atrás" en azul que navega a code_verificaton.dart
                 InkWell(
                   onTap: () {
                     Navigator.push(

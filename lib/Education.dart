@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Email.dart'; // Pantalla a la que regresa el botón "Atrás"
-import 'UploadPhoto.dart';
+import 'upload_photo.dart';
 
 class Education extends StatefulWidget {
   const Education({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'EnterPhoneNumber.dart';
-import 'VerificationforResetPassword.dart';
+import 'enter_phone_number.dart';
+import 'verification_for_reset_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

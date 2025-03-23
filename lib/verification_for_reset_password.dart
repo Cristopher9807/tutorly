@@ -2,7 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:tutorly/VerificationCodeforresetpassword.dart';
-import 'Login.dart';
+import 'login.dart';
 
 class VerificationforResetPassword extends StatefulWidget {
   const VerificationforResetPassword({super.key});
@@ -147,17 +147,17 @@ class _VerificationforResetPasswordState extends State<VerificationforResetPassw
 import 'package:flutter/material.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:tutorly/VerificationCodeforresetpassword.dart';
-//import 'Login.dart';
+import 'package:tutorly/verification_code_for_reset_password.dart';
+//import 'login.dart';
 
 class VerificationforResetPassword extends StatefulWidget {
   const VerificationforResetPassword({super.key});
 
   @override
-  _VerificationforResetPasswordState createState() => _VerificationforResetPasswordState();
+  VerificationforResetPasswordState createState() => VerificationforResetPasswordState();
 }
 
-class _VerificationforResetPasswordState extends State<VerificationforResetPassword> {
+class VerificationforResetPasswordState extends State<VerificationforResetPassword> {
   Country selectedCountry = Country.worldWide;
   TextEditingController phoneController = TextEditingController();
 

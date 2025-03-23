@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'Education.dart';
-import 'Congrats.dart';
+import 'education.dart';
+import 'congrats.dart';
 
 class UploadPhoto extends StatefulWidget {
   const UploadPhoto({super.key});

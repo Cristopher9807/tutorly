@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // IMPORTA TUS PANTALLAS REALES, si corresponde:
- import 'RoleSeparator.dart';
+ import 'role_separator.dart';
 
 class Onboarding3 extends StatefulWidget {
   const Onboarding3({Key? key}) : super(key: key);

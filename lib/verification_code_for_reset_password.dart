@@ -153,7 +153,7 @@ class _VerificationCodeforResetPasswordState extends State<VerificationCodeforRe
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'ResetPassword.dart';
+import 'reset_password.dart';
 //import 'VerificationforResetPassword.dart';
 
 class VerificationCodeforResetPassword extends StatefulWidget {

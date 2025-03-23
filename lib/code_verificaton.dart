@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 // Importa la pantalla a la que regresa el botón Atrás
-import 'EnterPhoneNumber.dart';
+import 'enter_phone_number.dart';
 // Importa la pantalla a la que navega el botón Continuar
-import 'FullName.dart';
+import 'full_name.dart';
 
 class CodeVerificaton extends StatefulWidget {
   final String countryCode;
