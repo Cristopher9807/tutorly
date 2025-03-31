@@ -15,6 +15,7 @@ dependencies:
   cloud_firestore: ^5.6.5
   firebase_auth: ^5.5.1  # Usa la última versión estable disponible
   country_picker: ^2.0.20  # Usa la última versión estable disponible
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_script/home_screen.dart';
 
 class Congrats extends StatefulWidget {
   const Congrats({super.key});
@@ -64,10 +65,10 @@ class CongratsState extends State<Congrats> {
                 // Botón "Ir a Inicio" (comentado la navegación)
                 InkWell(
                   onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (_) => HomePage()),
-                    // );
+                    Navigator.push(
+                       context,
+                       MaterialPageRoute(builder: (_) => HomeScreen()),
+                     );
                   },
                   child: Container(
                     width: double.infinity,
