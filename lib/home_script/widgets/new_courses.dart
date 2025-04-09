@@ -46,7 +46,7 @@ class BestNewCourses extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribuye los elementos horizontalmente
             children: [
               const Text(
-                'Cursos de tendencia',
+                'Los mejores cursos nuevos',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(

@@ -23,8 +23,8 @@ class Onboarding3State extends State<Onboarding3> {
               // Imagen principal
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 41),
-                child: Image.network(
-                  "https://storage.googleapis.com/tagjs-prod.appspot.com/VuZ5hgGxQ3/z0cn4qsp.png",
+                child: Image.asset(
+                  "assets/lesson.png",
                   fit: BoxFit.fill,
                 ),
               ),
@@ -57,14 +57,51 @@ class Onboarding3State extends State<Onboarding3> {
               const SizedBox(height: 24),
 
               // Indicador (dots)
-              SizedBox(
-                width: 44,
-                height: 8,
-                child: Image.network(
-                  "https://storage.googleapis.com/tagjs-prod.appspot.com/VuZ5hgGxQ3/ncrzkd6h.png",
-                  fit: BoxFit.fill,
-                ),
+                            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  // Círculo vacío
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Color(0xFF0760FB), // Azul
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8), // Espacio entre elementos
+
+                  // Círculo vacío
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Color(0xFF0760FB), // Azul
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8), // Espacio entre elementos
+                  // Rectángulo redondeado (activo)
+                  Container(
+                    width: 21,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF0760FB), // Azul
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  
+
+                ],
               ),
+
               const SizedBox(height: 30),
 
               // Botones "Saltar" y "Continuar"

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'perfil.dart';
 import 'package:tutorly/congrats.dart';
+import 'reviews.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -110,13 +111,15 @@ class SideMenu extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
                 }),
                 _buildMenuItem(Icons.star, "Valoración y reseñas", () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => RatingsAndReviewsScreen()));
                 }),
                 _buildMenuItem(Icons.person, "Perfil", () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
                 }),
                 const Divider(),
-                _buildMenuItem(Icons.exit_to_app, "Salir", () {}),
+                _buildMenuItem(Icons.exit_to_app, "Salir", () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => login()));
+                }),
               ],
             ),
           ),

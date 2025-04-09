@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tutorly/congrats.dart';
+import '../filtre/filtre_screen.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -30,7 +31,13 @@ class HomeHeader extends StatelessWidget {
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.filter_list),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Navegar a la pantalla de filtros
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FiltersScreen()),
+                    );
+                  },
                 ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.all(14),
@@ -92,74 +99,88 @@ class HomeHeader extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 38),
 
         // Banner de oferta
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: const LinearGradient(
-                colors: [Colors.blue, Colors.blueAccent],
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Stack(
+          clipBehavior: Clip.none, // Permite que los elementos sobresalgan
+          children: [
+            // Banner principal
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color.fromARGB(255, 139, 92, 246), Color.fromARGB(255, 7, 96,251),],
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Obtén la oferta de tu ",
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // TODO: Navegación a otra pantalla
+                          },
+                          child: const Text(
+                            "vida",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          "Acceso a todos los cursos",
+                          style: TextStyle(color: Colors.black, fontSize: 14),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            "Canjear ahora",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 100), // Espacio para la imagen
+                ],
               ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Obtén la oferta de tu ",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          // TODO: Navegación a otra pantalla
-                        },
-                        child: const Text(
-                          "vida",
-                          style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const Text(
-                        "Acceso a todos los cursos",
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text("Canjear ahora", style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Image.network(
-                  "https://storage.googleapis.com/tagjs-prod.appspot.com/VuZ5hgGxQ3/r21o6dv4.png",
-                  width: 80,
-                ),
-              ],
+            // Imagen que sobresale del banner
+            Positioned(
+              right: -10, // Ajusta la posición hacia afuera del contenedor
+              top: -25, // Mueve la imagen hacia arriba si es necesario
+              child: Image.asset(
+                "assets/men.png",
+                width: 180,
+              ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
+ ],
     );
   }
 

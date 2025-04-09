@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'user_session.dart';
 
 class RoleSeparator extends StatefulWidget {
   const RoleSeparator({super.key});
@@ -7,6 +8,7 @@ class RoleSeparator extends StatefulWidget {
   @override
   RoleSeparatorState createState() => RoleSeparatorState();
 }
+
 
 class RoleSeparatorState extends State<RoleSeparator> {
   @override
@@ -52,6 +54,7 @@ class RoleSeparatorState extends State<RoleSeparator> {
                 // --- BOTÓN "Como tutor" ---
                 InkWell(
                   onTap: () {
+                    UserSession.selectedRole = "tutor";
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => Login()),
@@ -95,6 +98,7 @@ class RoleSeparatorState extends State<RoleSeparator> {
                 // --- BOTÓN "Como estudiante" ---
                 InkWell(
                   onTap: () {
+                    UserSession.selectedRole = "estudiante";
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => Login()),
