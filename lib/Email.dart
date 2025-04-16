@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter/gestures.dart';
 import 'education.dart';
 import 'full_name.dart';
+import 'user_session.dart';
 
 class Email extends StatefulWidget {
   const Email({super.key});
@@ -12,11 +12,13 @@ class Email extends StatefulWidget {
 
 class EmailState extends State<Email> {
   String email = '';
+  String password = '';
+  String confirmPassword = '';
+  String errorText = '';
 
   @override
   Widget build(BuildContext context) {
-    // El botón Continuar se habilita solo si el campo no está vacío.
-    bool isEmailFilled = email.isNotEmpty;
+    bool isFormValid = email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty && password == confirmPassword;
 
     return Scaffold(
       body: SafeArea(
@@ -26,7 +28,6 @@ class EmailState extends State<Email> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Botón "Atrás" en azul que lleva a code_verificaton.dart
                 InkWell(
                   onTap: () {
                     Navigator.push(
@@ -47,8 +48,6 @@ class EmailState extends State<Email> {
                   ),
                 ),
                 const SizedBox(height: 30),
-
-                // Título
                 const Text(
                   "¿Cuál es tu correo electrónico?",
                   style: TextStyle(
@@ -58,8 +57,6 @@ class EmailState extends State<Email> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Etiqueta "Correo electrónico"
                 const Text(
                   "Correo electrónico",
                   style: TextStyle(
@@ -69,34 +66,68 @@ class EmailState extends State<Email> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo de texto para el email
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCBD5E1), width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: TextField(
-                    keyboardType: TextInputType.emailAddress,
-                    onChanged: (value) {
-                      setState(() {
-                        email = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: "ejemplo@dominio.com",
-                      border: InputBorder.none,
-                    ),
+                _buildInputField(
+                  hintText: "ejemplo@dominio.com",
+                  onChanged: (value) {
+                    setState(() {
+                      email = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Contraseña",
+                  style: TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 10),
+                _buildInputField(
+                  hintText: "********",
+                  obscureText: true,
+                  onChanged: (value) {
+                    setState(() {
+                      password = value;
+                      errorText = '';
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Confirmar contraseña",
+                  style: TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _buildInputField(
+                  hintText: "********",
+                  obscureText: true,
+                  onChanged: (value) {
+                    setState(() {
+                      confirmPassword = value;
+                      errorText = '';
+                    });
+                  },
+                ),
+                const SizedBox(height: 10),
+                if (password != confirmPassword && confirmPassword.isNotEmpty)
+                  const Text(
+                    "Las contraseñas no coinciden",
+                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  ),
                 const SizedBox(height: 30),
-
-                // Botón "Continuar" que navega a Education.dart solo si el campo no está vacío
                 InkWell(
-                  onTap: isEmailFilled
+                  onTap: isFormValid
                       ? () {
+                          // Guardar datos en la sesión
+                          UserSession.email = email;
+                          UserSession.password = password;
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const Education()),
@@ -106,7 +137,7 @@ class EmailState extends State<Email> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: isEmailFilled ? const Color(0xFF0760FB) : Colors.grey,
+                      color: isFormValid ? const Color(0xFF0760FB) : Colors.grey,
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0x26000000),
@@ -129,43 +160,28 @@ class EmailState extends State<Email> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // Enlace "¿Ya tienes una cuenta? Iniciar sesión" en azul (acción comentada)
-                /*Center(
-                  child: RichText(
-                    text: TextSpan(
-                      text: "¿Ya tienes una cuenta? ",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Iniciar sesión",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // Navegación a la pantalla de Login (acción comentada)
-                              // Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
-                            },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),*/
-                const SizedBox(height: 30),
-
-                
-                const SizedBox(height: 20),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({required String hintText, bool obscureText = false, required Function(String) onChanged}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFCBD5E1), width: 1),
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: TextField(
+        obscureText: obscureText,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          hintText: hintText,
+          border: InputBorder.none,
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'verification_for_reset_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'user_session.dart';
+import 'enter_phone_number.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});  // ✅ CORRECTO
@@ -19,95 +20,117 @@ class _LoginState extends State<Login> {
   bool rememberMe = false;
   bool obscurePassword = true;
 
-Future<void> _login() async {
-  try {
-    final String email = emailController.text.trim();
-    final String password = passwordController.text.trim();
+  Future<void> _login() async {
+    try {
+      final String email = emailController.text.trim();
+      final String password = passwordController.text.trim();
 
-    debugPrint("📩 Email: $email");
-    debugPrint("🔒 Password: $password");
+      debugPrint("📩 Email: $email");
+      debugPrint("🔒 Password: $password");
 
-    if (email.isEmpty || password.isEmpty) {
-      debugPrint("⚠️ Campos vacíos");
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, llena todos los campos'),
-          backgroundColor: Colors.red,
-        ),
+      if (email.isEmpty || password.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor, llena todos los campos'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      debugPrint("🔐 Autenticando...");
+
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-      return;
-    }
 
-    debugPrint("🔐 Autenticando...");
+      debugPrint("✅ Usuario autenticado");
 
-    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    debugPrint("✅ Usuario autenticado");
-
-    QuerySnapshot userQuery = await _firestore
-        .collection('users')
-        .where('email', isEqualTo: email.toLowerCase())
-        .limit(1)
-        .get();
-
-    debugPrint("📦 Consulta completada");
-
-    if (userQuery.docs.isNotEmpty) {
-      final userData = userQuery.docs.first.data() as Map<String, dynamic>;
-
-      debugPrint("📄 Datos del usuario Firestore: $userData");
-
-      final userRoleInDB = userData['user']?.toString().toLowerCase();
+      // Buscar en ambas colecciones: users y tutors
       final selectedRole = UserSession.selectedRole?.toLowerCase();
 
-      debugPrint("🧪 Comparando rol Firestore: $userRoleInDB con seleccionado: $selectedRole");
+      String? foundInCollection;
 
-      if (userRoleInDB == selectedRole) {
-        debugPrint("✅ Rol coincide");
-        Navigator.pushNamed(context, '/Congrats');
+      Map<String, dynamic>? userData;
+
+      // Buscar en 'users'
+      final userQuery = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email.toLowerCase())
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isNotEmpty) {
+        userData = userQuery.docs.first.data() as Map<String, dynamic>;
+        foundInCollection = 'users';
       } else {
-        debugPrint("❌ Rol no coincide");
+        // Buscar en 'tutors'
+        final tutorQuery = await _firestore
+            .collection('tutors')
+            .where('email', isEqualTo: email.toLowerCase())
+            .limit(1)
+            .get();
+
+        if (tutorQuery.docs.isNotEmpty) {
+          userData = tutorQuery.docs.first.data() as Map<String, dynamic>;
+          foundInCollection = 'tutors';
+        }
+      }
+
+      if (userData != null && foundInCollection != null) {
+        debugPrint("📄 Datos encontrados en colección '$foundInCollection': $userData");
+
+        // Validar si el rol coincide con la colección
+        final roleMatches = (foundInCollection == 'users' && selectedRole == 'estudiante') ||
+            (foundInCollection == 'tutors' && selectedRole == 'tutor');
+
+        if (roleMatches) {
+          debugPrint("✅ Rol coincide con la colección encontrada");
+
+          Navigator.pushNamed(context, '/Congrats');
+        } else {
+          debugPrint("❌ Rol no coincide con la colección");
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('El rol seleccionado no coincide con tu cuenta.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      } else {
+        debugPrint("❌ Usuario no encontrado en ninguna colección.");
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('El rol seleccionado no coincide con tu cuenta.'),
-            backgroundColor: Colors.orange,
+            content: Text('Usuario no encontrado en la base de datos.'),
+            backgroundColor: Colors.red,
           ),
         );
       }
-    } else {
-      debugPrint("❌ No se encontró usuario con ese email en Firestore.");
+    } catch (e) {
+      debugPrint("❌ Error en login: $e");
+
+      if (!mounted) return;
+
+      String errorMessage = "Error al iniciar sesión.";
+      if (e is FirebaseAuthException) {
+        if (e.code == "invalid-credential") {
+          errorMessage = "Correo o contraseña incorrectos.";
+        }
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Usuario no encontrado en la base de datos.'),
+        SnackBar(
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
         ),
       );
     }
-  } catch (e) {
-    debugPrint("❌ Error en login: $e");
-
-    if (!mounted) return;
-
-    String errorMessage = "Error al iniciar sesión.";
-    if (e is FirebaseAuthException) {
-      if (e.code == "invalid-credential") {
-        errorMessage = "Correo o contraseña incorrectos.";
-      }
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
+
 
   @override
   Widget build(BuildContext context) {

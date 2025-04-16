@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Email.dart'; // Pantalla a la que regresa el botón "Atrás"
 import 'upload_photo.dart';
+import 'user_session.dart';
 
 class Education extends StatefulWidget {
   const Education({super.key});
@@ -74,7 +75,7 @@ class EducationState extends State<Education> {
     "No encuentro mi Institución",
   ];
 
-    bool get isFormValid =>
+  bool get isFormValid =>
       idController.text.isNotEmpty &&
       selectedSpecialty.isNotEmpty &&
       selectedUniversity.isNotEmpty;
@@ -135,7 +136,7 @@ class EducationState extends State<Education> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   labelText: "Identificación universitaria",
-                  hintText: "189204 8923", // Como en la imagen
+                  hintText: "189204 8923",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -263,6 +264,15 @@ class EducationState extends State<Education> {
                   ),
                   onPressed: isFormValid
                       ? () {
+                          // Guardar la info en UserSession
+                          UserSession.universityId = idController.text.trim();
+                          UserSession.specialty = showCustomSpecialtyField
+                              ? customSpecialtyController.text.trim()
+                              : selectedSpecialty;
+                          UserSession.university = showCustomUniversityField
+                              ? customUniversityController.text.trim()
+                              : selectedUniversity;
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const UploadPhoto()),

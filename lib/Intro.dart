@@ -28,8 +28,8 @@ class IntroState extends State<Intro> {
             fit: StackFit.expand,
             children: [
               // Imagen de fondo que se ajusta a cualquier dispositivo
-              Image.network(
-                "https://storage.googleapis.com/tagjs-prod.appspot.com/VuZ5hgGxQ3/yrydbd4g.png",
+              Image.asset(
+                "logo.png",
                 fit: BoxFit.cover,
               ),
               // Elemento superpuesto: Indicador de carga centrado

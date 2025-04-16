@@ -2,35 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'code_verificaton.dart';
 import 'Email.dart';
+import 'user_session.dart';
 
 class FullName extends StatefulWidget {
   const FullName({super.key});
-  
+
   @override
   FullNameState createState() => FullNameState();
 }
 
 class FullNameState extends State<FullName> {
   String textField1 = '';
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        // Permite el scroll en dispositivos con pantallas pequeñas
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Botón "Atrás" en azul que navega a code_verificaton.dart
                 InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const CodeVerificaton(countryCode: '', phoneNumber: '',),
+                        builder: (_) => const CodeVerificaton(countryCode: '', phoneNumber: ''),
                       ),
                     );
                   },
@@ -47,8 +46,6 @@ class FullNameState extends State<FullName> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                
-                // Título de la pantalla
                 const Text(
                   "¿Cómo te llamas?",
                   style: TextStyle(
@@ -58,8 +55,6 @@ class FullNameState extends State<FullName> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
-                // Etiqueta "Nombre Completo"
                 const Text(
                   "Nombre Completo",
                   style: TextStyle(
@@ -69,8 +64,6 @@ class FullNameState extends State<FullName> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                
-                // Campo de texto para el nombre
                 Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
@@ -96,7 +89,6 @@ class FullNameState extends State<FullName> {
                     maxLength: 20,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     inputFormatters: [
-                      // Permite solo letras (mayúsculas y minúsculas) y espacios
                       FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
                     ],
                     decoration: const InputDecoration(
@@ -109,12 +101,13 @@ class FullNameState extends State<FullName> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                
-                // Botón "Continuar" que lleva a Email.dart y se activa solo si hay texto
                 InkWell(
                   onTap: textField1.isEmpty
                       ? null
                       : () {
+                          // Guardar el nombre completo en la sesión
+                          UserSession.fullName = textField1;
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -148,32 +141,7 @@ class FullNameState extends State<FullName> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                
-                // Enlace "Vuelve a enviarlo" en azul (acción comentada para implementar en el futuro)
-               /* Center(
-                  child: RichText(
-                    text: TextSpan(
-                      text: "Vuelve a enviarlo",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          // Aquí iría la lógica para reenviar el código
-                          // Ejemplo:
-                          // Navigator.push(context, MaterialPageRoute(builder: (_) => ReenviarCodigoScreen()));
-                        },
-                    ),
-                  ),
-                ),*/
-                
                 const SizedBox(height: 30),
-                
-                
-                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -182,4 +150,3 @@ class FullNameState extends State<FullName> {
     );
   }
 }
-

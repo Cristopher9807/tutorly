@@ -6,9 +6,9 @@ class FilteredCoursesScreen extends StatelessWidget {
   final String difficulty;
   final double minPrice;
   final double maxPrice;
-  final int rating;
+  final double rating;
   final String published;
-  final String duration;
+  final List<String> duration;
 
   const FilteredCoursesScreen({
     Key? key,
@@ -16,24 +16,40 @@ class FilteredCoursesScreen extends StatelessWidget {
     required this.difficulty,
     required this.minPrice,
     required this.maxPrice,
-    required this.rating,
     required this.published,
+    required this.rating,
     required this.duration,
   }) : super(key: key);
 
   Future<List<Map<String, dynamic>>> fetchFilteredCourses() async {
-    Query query = FirebaseFirestore.instance.collection('courses')
-      .where('category', isEqualTo: category)
-      .where('difficulty', isEqualTo: difficulty)
-      .where('published', isEqualTo: published)
-      .where('duration', isEqualTo: duration)
-      .where('price', isGreaterThanOrEqualTo: minPrice)
-      .where('price', isLessThanOrEqualTo: maxPrice)
-      .where('rating', isGreaterThanOrEqualTo: rating);
+    List<Map<String, dynamic>> filteredCourses = [];
 
-    final snapshot = await query.get();
+    final tutorsSnapshot = await FirebaseFirestore.instance.collection('tutors').get();
 
-    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    for (var tutorDoc in tutorsSnapshot.docs) {
+      final coursesSnapshot = await tutorDoc.reference.collection('courses')
+        .where('category', isEqualTo: category)
+        .where('difficulty', isEqualTo: difficulty)
+        .where('published', isEqualTo: published) // Filtra por si el curso está publicado
+        .where('rating', isGreaterThanOrEqualTo: rating)
+        .where('minPrice', isLessThanOrEqualTo: maxPrice)
+        .where('maxPrice', isGreaterThanOrEqualTo: minPrice)
+        .get();
+
+      for (var courseDoc in coursesSnapshot.docs) {
+        final courseData = courseDoc.data();
+        courseData['tutorId'] = tutorDoc.id;
+        courseData['courseId'] = courseDoc.id;
+        courseData['tutorName'] = tutorDoc.data()['fullName'];
+
+        // Filtrar por duración si es necesario
+        if (duration.contains(courseData['duration'])) {
+          filteredCourses.add(courseData);
+        }
+      }
+    }
+
+    return filteredCourses;
   }
 
   @override
@@ -45,10 +61,10 @@ class FilteredCoursesScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No se encontraron cursos."));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("No se encontraron cursos que coincidan."));
           }
 
           final courses = snapshot.data!;
@@ -57,27 +73,16 @@ class FilteredCoursesScreen extends StatelessWidget {
             itemCount: courses.length,
             itemBuilder: (context, index) {
               final course = courses[index];
-              return Card(
-                child: ListTile(
-                  title: Text(course['title'] ?? 'Sin título'),
-                  subtitle: Text(
-                    "Categoría: ${course['category']} • "
-                    "Dificultad: ${course['difficulty']}\n"
-                    "Duración: ${course['duration']}, Publicado: ${course['published']}\n"
-                    "Precio: \$${course['price']}",
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(5, (i) {
-                      return Icon(
-                        i < (course['rating'] ?? 0)
-                            ? Icons.star
-                            : Icons.star_border,
-                        color: Colors.orange,
-                        size: 16,
-                      );
-                    }),
-                  ),
+              return ListTile(
+                title: Text(course['subject'] ?? 'Sin título'),
+                subtitle: Text('${course['category']} - ${course['difficulty']}'),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('\$${course['price']}'),
+                    Text('${course['rating']} ⭐'),
+                  ],
                 ),
               );
             },

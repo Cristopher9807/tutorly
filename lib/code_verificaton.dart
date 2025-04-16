@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
-// Importa la pantalla a la que regresa el botón Atrás
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'enter_phone_number.dart';
-// Importa la pantalla a la que navega el botón Continuar
 import 'full_name.dart';
 
 class CodeVerificaton extends StatefulWidget {
@@ -26,18 +26,21 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
   final TextEditingController digit2Controller = TextEditingController();
   final TextEditingController digit3Controller = TextEditingController();
   final TextEditingController digit4Controller = TextEditingController();
-
-  // Código de verificación de prueba
-  final String testVerificationCode = "1234";
+  final TextEditingController digit5Controller = TextEditingController();
+  final TextEditingController digit6Controller = TextEditingController();
 
   bool canResendCode = false;
   int _secondsRemaining = 60;
   Timer? _timer;
 
+  String? _verificationId;
+  String? debugMessage;
+
   @override
   void initState() {
     super.initState();
     _startTimer();
+    _verifyPhoneNumber();
   }
 
   @override
@@ -64,15 +67,82 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
     });
   }
 
+  void _verifyPhoneNumber() async {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: "${widget.countryCode}${widget.phoneNumber}",
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        _goToNextScreen();
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print("❌ Verificación fallida: ${e.message}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("❌ Error al verificar número: ${e.message}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        print("✅ Código enviado, ID: $verificationId");
+        setState(() {
+          _verificationId = verificationId;
+          debugMessage = "📩 Código enviado (emulador): $verificationId";
+        });
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        setState(() {
+          _verificationId = verificationId;
+        });
+      },
+    );
+  }
+
+  Future<void> _verifyCodeAndContinue() async {
+    final code = getEnteredCode();
+    if (_verificationId == null || code.length != 6) return;
+
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId!,
+        smsCode: code,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      _goToNextScreen();
+    } catch (e) {
+      print("❌ Código incorrecto o error: $e");
+      setState(() {
+        debugMessage = "❌ Código incorrecto o expirado";
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("❌ Código incorrecto o expirado"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _goToNextScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const FullName()),
+    );
+  }
+
   String getEnteredCode() {
     return digit1Controller.text +
         digit2Controller.text +
         digit3Controller.text +
-        digit4Controller.text;
+        digit4Controller.text +
+        digit5Controller.text +
+        digit6Controller.text;
   }
 
   bool isCodeComplete() {
-    return getEnteredCode().length == 4;
+    return getEnteredCode().length == 6;
   }
 
   Widget _buildDigitField(TextEditingController controller) {
@@ -107,7 +177,6 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
   @override
   Widget build(BuildContext context) {
     final String fullNumber = "${widget.countryCode} ${widget.phoneNumber}";
-    final bool isCodeValid = getEnteredCode() == testVerificationCode;
 
     return Scaffold(
       body: SafeArea(
@@ -121,8 +190,7 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (_) => EnterPhoneNumber()),
+                      MaterialPageRoute(builder: (_) => EnterPhoneNumber()),
                     );
                   },
                   child: Row(
@@ -138,7 +206,6 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                   ),
                 ),
                 const SizedBox(height: 30),
-
                 const Text(
                   "Verifica tu número",
                   style: TextStyle(
@@ -148,7 +215,6 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                   ),
                 ),
                 const SizedBox(height: 8),
-
                 Text(
                   "Hemos enviado un código al número $fullNumber",
                   style: const TextStyle(
@@ -157,7 +223,6 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                   ),
                 ),
                 const SizedBox(height: 30),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -165,27 +230,21 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                     _buildDigitField(digit2Controller),
                     _buildDigitField(digit3Controller),
                     _buildDigitField(digit4Controller),
+                    _buildDigitField(digit5Controller),
+                    _buildDigitField(digit6Controller),
                   ],
                 ),
                 const SizedBox(height: 30),
-
                 InkWell(
-                  onTap: isCodeValid
-                      ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const FullName()),
-                          );
-                        }
-                      : null,
+                  onTap: isCodeComplete() ? _verifyCodeAndContinue : null,
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: isCodeValid
+                      color: isCodeComplete()
                           ? const Color(0xFF0760FB)
                           : Colors.grey,
                       boxShadow: [
-                        if (isCodeValid)
+                        if (isCodeComplete())
                           const BoxShadow(
                             color: Color(0x26000000),
                             blurRadius: 4,
@@ -199,7 +258,7 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                       child: Text(
                         "Continuar",
                         style: TextStyle(
-                          color: isCodeValid ? Colors.white : Colors.black,
+                          color: isCodeComplete() ? Colors.white : Colors.black,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -208,6 +267,20 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                if (debugMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      debugMessage!,
+                      style: TextStyle(
+                        color: debugMessage!.startsWith("❌")
+                            ? Colors.red
+                            : Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
 
                 Center(
                   child: RichText(
@@ -231,7 +304,7 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                           recognizer: TapGestureRecognizer()
                             ..onTap = canResendCode
                                 ? () {
-                                    // Aquí iría la lógica para reenviar el código
+                                    _verifyPhoneNumber();
                                     _startTimer();
                                   }
                                 : null,
@@ -240,10 +313,6 @@ class _CodeVerificatonState extends State<CodeVerificaton> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-
-               
-                const SizedBox(height: 20),
               ],
             ),
           ),

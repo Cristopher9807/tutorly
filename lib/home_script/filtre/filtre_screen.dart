@@ -9,8 +9,8 @@ class FiltersScreen extends StatefulWidget {
 
 class _FiltersScreenState extends State<FiltersScreen> {
   bool isTutorsSelected = true;
-  double minRate = 12;
-  double maxRate = 29;
+  double minRate = 0;
+  double maxRate = 30;
   int selectedRating = 3;
 
   String selectedSubject = "MAT 116";
@@ -19,9 +19,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
   String selectedCategory = "Programación";
   String selectedLevel = "Principiante";
   String selectedPublished = "En los últimos 6 meses";
-  String selectedAvailability = "Lunes";
-  String selectedTime = "Tarde";
-  String selectedDuration = "3-6 hrs";
+  List<String> selectedAvailability = [];
+  List<String> selectedTime = [];
+  List<String> selectedDuration = ["3-6 hrs"];
+
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +120,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDropdown("Categoría del curso", selectedCategory, ["Programación", "Matemáticas", "Ciencia de Datos"], (val) {
+        _buildDropdown("Categoría del curso", selectedCategory, ["Programación", "Matemáticas", "Ciencia de Datos","Fotografía"], (val) {
           setState(() => selectedCategory = val);
         }),
         _buildDropdown("Nivel de dificultad", selectedLevel, ["Principiante", "Intermedio", "Avanzado"], (val) {
@@ -169,7 +170,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
     );
   }
 
-  Widget _buildMultiSelect(String title, List<String> options, String selected, Function(String) onSelected) {
+  Widget _buildMultiSelect(String title, List<String> options, List<String> selected, Function(List<String>) onSelected) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -178,12 +179,18 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Wrap(
           spacing: 8,
           children: options.map((option) {
-            bool isSelected = option == selected;
-            return ChoiceChip(
+            bool isSelected = selected.contains(option);
+            return FilterChip(
               label: Text(option),
               selected: isSelected,
-              onSelected: (bool selected) {
-                if (selected) onSelected(option);
+              onSelected: (bool value) {
+                final updated = List<String>.from(selected);
+                if (value) {
+                  updated.add(option);
+                } else {
+                  updated.remove(option);
+                }
+                onSelected(updated);
               },
               selectedColor: Colors.blue,
               labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.black),
@@ -194,6 +201,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
       ],
     );
   }
+
+
 
   Widget _buildRatingSelector() {
     return Column(
@@ -267,10 +276,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   MaterialPageRoute(
                     builder: (context) => FilteredTutorsScreen(
                       subject: selectedSubject,
-                      availableDays: [selectedAvailability],
+                      availableDays: selectedAvailability,
                       minPrice: minRate,
                       maxPrice: maxRate,
-                      rating: selectedRating,
+                      rating: selectedRating.toDouble(),
                       experience: selectedExperience,
                       degree: selectedDegree,
                       time: selectedTime,
@@ -286,7 +295,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                       difficulty: selectedLevel,
                       minPrice: minRate,
                       maxPrice: maxRate,
-                      rating: selectedRating,
+                      rating: selectedRating.toDouble(),
                       published: selectedPublished,
                       duration: selectedDuration,
                     ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tutorly/role_separator.dart';
 import 'perfil.dart';
 import 'package:tutorly/congrats.dart';
 import 'reviews.dart';
+import 'package:tutorly/login.dart';
+import 'package:tutorly/firestore_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -107,9 +110,17 @@ class SideMenu extends StatelessWidget {
                 _buildMenuItem(Icons.schedule, "Reserva de tutores", () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
                 }),
-                _buildMenuItem(Icons.play_circle_fill, "Mis cursos", () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
+                _buildMenuItem(Icons.play_circle_fill, "Mis cursos", () async {
+                  // Llamar a la función que sube los tutores y cursos
+                  await uploadTutorsWithCourses();
+
+                  // Después de subir los datos, navega a la pantalla Congrats
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Congrats()),
+                  );
                 }),
+
                 _buildMenuItem(Icons.star, "Valoración y reseñas", () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => RatingsAndReviewsScreen()));
                 }),
@@ -118,7 +129,7 @@ class SideMenu extends StatelessWidget {
                 }),
                 const Divider(),
                 _buildMenuItem(Icons.exit_to_app, "Salir", () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => login()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RoleSeparator()));
                 }),
               ],
             ),
