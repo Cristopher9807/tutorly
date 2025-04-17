@@ -5,6 +5,7 @@ import 'package:tutorly/congrats.dart';
 import 'reviews.dart';
 import 'package:tutorly/login.dart';
 import 'package:tutorly/firestore_service.dart';
+import 'package:tutorly/user_session.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,13 +26,12 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          // 🔹 Ícono de Notificaciones con Contador
+          // 🔹 Notificaciones
           Stack(
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications, color: Colors.blueAccent),
                 onPressed: () {
-                  // Navega a la pantalla de notificaciones
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ProfileScreen()),
@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                     minHeight: 18,
                   ),
                   child: const Text(
-                    '5', // 📌 Número de notificaciones
+                    '5',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -65,20 +65,19 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
 
-          // 🔹 Ícono de Carrito de Compras
+          // 🔹 Carrito
           IconButton(
             icon: const Icon(Icons.shopping_cart, color: Colors.blueAccent),
             onPressed: () {
               Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                  );
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
             },
           ),
         ],
       ),
 
-      // 🔹 Drawer (Menú lateral)
       drawer: const SideMenu(),
 
       body: const Center(
@@ -102,34 +101,30 @@ class SideMenu extends StatelessWidget {
             child: ListView(
               children: [
                 _buildMenuItem(Icons.home, "Inicio", () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Congrats()));
                 }),
                 _buildMenuItem(Icons.message, "Mensajes", () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Congrats()));
                 }),
                 _buildMenuItem(Icons.schedule, "Reserva de tutores", () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Congrats()));
                 }),
                 _buildMenuItem(Icons.play_circle_fill, "Mis cursos", () async {
-                  // Llamar a la función que sube los tutores y cursos
                   await uploadTutorsWithCourses();
-
-                  // Después de subir los datos, navega a la pantalla Congrats
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Congrats()),
+                    MaterialPageRoute(builder: (context) => const Congrats()),
                   );
                 }),
-
                 _buildMenuItem(Icons.star, "Valoración y reseñas", () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => RatingsAndReviewsScreen()));
+                  //Navigator.push(context, MaterialPageRoute(builder: (context) => const RatingsAndReviewsScreen()));
                 }),
                 _buildMenuItem(Icons.person, "Perfil", () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
                 }),
                 const Divider(),
                 _buildMenuItem(Icons.exit_to_app, "Salir", () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => RoleSeparator()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const RoleSeparator()));
                 }),
               ],
             ),
@@ -140,6 +135,10 @@ class SideMenu extends StatelessWidget {
   }
 
   Widget _buildUserHeader() {
+    final String name = UserSession.fullName ?? 'Nombre no disponible';
+    final String email = UserSession.email ?? 'Correo no disponible';
+    //final String profileImageUrl = UserSession.profileImageUrl ?? 'https://randomuser.me/api/portraits/men/44.jpg'; // Imagen predeterminada
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
@@ -149,16 +148,16 @@ class SideMenu extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 30,
-            backgroundImage: NetworkImage("https://randomuser.me/api/portraits/women/44.jpg"),
+            backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/219/219969.png'),
           ),
           const SizedBox(width: 12),
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("María García", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              Text("maría.garcia@email.com", style: TextStyle(fontSize: 12, color: Colors.grey)),
+              Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(email, style: const TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
         ],

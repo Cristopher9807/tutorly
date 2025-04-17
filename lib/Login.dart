@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'user_session.dart';
 import 'enter_phone_number.dart';
+import 'home_script/home_screen.dart'; // Asegúrate de importar tu pantalla principal
+
 
 class Login extends StatefulWidget {
   const Login({super.key});  // ✅ CORRECTO
@@ -21,38 +23,36 @@ class _LoginState extends State<Login> {
   bool obscurePassword = true;
 
   Future<void> _login() async {
-    try {
-      final String email = emailController.text.trim();
-      final String password = passwordController.text.trim();
+    final String email = emailController.text.trim();
+    final String password = passwordController.text.trim();
 
+    if (email.isEmpty || password.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, llena todos los campos'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
       debugPrint("📩 Email: $email");
       debugPrint("🔒 Password: $password");
-
-      if (email.isEmpty || password.isEmpty) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Por favor, llena todos los campos'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
       debugPrint("🔐 Autenticando...");
 
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
       debugPrint("✅ Usuario autenticado");
 
-      // Buscar en ambas colecciones: users y tutors
+      // Guardar info en UserSession
+      UserSession.fromFirebase(userCredential.user!);
+
+      // Buscar en Firestore para validar el rol
       final selectedRole = UserSession.selectedRole?.toLowerCase();
-
       String? foundInCollection;
-
       Map<String, dynamic>? userData;
 
       // Buscar en 'users'
@@ -80,19 +80,25 @@ class _LoginState extends State<Login> {
       }
 
       if (userData != null && foundInCollection != null) {
-        debugPrint("📄 Datos encontrados en colección '$foundInCollection': $userData");
+        debugPrint("📄 Datos encontrados en '$foundInCollection': $userData");
 
-        // Validar si el rol coincide con la colección
         final roleMatches = (foundInCollection == 'users' && selectedRole == 'estudiante') ||
             (foundInCollection == 'tutors' && selectedRole == 'tutor');
 
         if (roleMatches) {
           debugPrint("✅ Rol coincide con la colección encontrada");
-
+          
+          // GUARDAR DATOS EN UserSession
+          UserSession.fullName = userData['fullName'];
+          UserSession.email = userData['email'];
+          UserSession.role = userData['role'];
+          UserSession.specialty = userData['specialty'];
+          UserSession.university = userData['university'];
+          UserSession.universityId = userData['universityId'];
+          
           Navigator.pushNamed(context, '/Congrats');
         } else {
-          debugPrint("❌ Rol no coincide con la colección");
-
+          debugPrint("❌ Rol no coincide");
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('El rol seleccionado no coincide con tu cuenta.'),
@@ -101,8 +107,7 @@ class _LoginState extends State<Login> {
           );
         }
       } else {
-        debugPrint("❌ Usuario no encontrado en ninguna colección.");
-
+        debugPrint("❌ Usuario no encontrado en Firestore.");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Usuario no encontrado en la base de datos.'),
@@ -116,10 +121,8 @@ class _LoginState extends State<Login> {
       if (!mounted) return;
 
       String errorMessage = "Error al iniciar sesión.";
-      if (e is FirebaseAuthException) {
-        if (e.code == "invalid-credential") {
-          errorMessage = "Correo o contraseña incorrectos.";
-        }
+      if (e is FirebaseAuthException && e.code == "invalid-credential") {
+        errorMessage = "Correo o contraseña incorrectos.";
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,6 +134,44 @@ class _LoginState extends State<Login> {
     }
   }
 
+    // Esta función carga los datos del usuario desde Firestore y los guarda en UserSession
+  Future<void> loadUserData(String userId) async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+      if (userDoc.exists) {
+        var userData = userDoc.data() as Map<String, dynamic>;
+
+        // Almacenar los datos en UserSession
+        UserSession.fullName = userData['fullName'];
+        UserSession.email = userData['email'];
+        UserSession.role = userData['role'];
+        //UserSession.profileImageUrl = userData['profileImageUrl']; // Si tienes imagen de perfil
+      } else {
+        print("Usuario no encontrado en Firestore");
+      }
+    } catch (e) {
+      print("Error al cargar los datos del usuario: $e");
+    }
+  }
+
+  Future<void> signIn(String email, String password) async {
+  try {
+    // Iniciar sesión con Firebase Auth
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+
+    // Cargar los datos del usuario desde Firestore
+    await loadUserData(userCredential.user!.uid);
+
+    // Navegar al HomeScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomeScreen()),
+    );
+  } catch (e) {
+    print("Error al iniciar sesión: $e");
+  }
+}
 
   @override
   Widget build(BuildContext context) {

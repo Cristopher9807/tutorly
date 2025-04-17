@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tutorly/user_session.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +22,11 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+String formatList(List<String> items) {
+  return items.join(', ');
+}
+
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -81,36 +90,37 @@ class ProfileScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("María García", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 5),
-                    const Text("880 1777395216", style: TextStyle(color: Colors.grey)),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Row(
-                          children: List.generate(5, (index) => const Icon(Icons.star, color: Colors.orange, size: 16)),
-                        ),
-                        const SizedBox(width: 5),
-                        const Text("4.5", style: TextStyle(fontSize: 14)),
-                      ],
+                    Text(
+                      UserSession.fullName ?? 'Nombre no disponible',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
+                    const SizedBox(height: 5),
+                    Text(
+                      UserSession.email ?? 'Correo no disponible',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    
                   ],
                 ),
               ),
-              SizedBox(
-                width: 120, // Ancho del botón
-                height: 30, // Altura del botón
-                child: OutlinedButton(
-                  onPressed: () {},
-                  child: const Text("Cambiar foto",style: TextStyle(fontSize: 11, color: Colors.blue)),
-                ),
-              )
             ],
           ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: 120,
+            height: 30,
+            child: OutlinedButton(
+              onPressed: () {
+                // Aquí puedes agregar lógica para cambiar foto
+              },
+              child: const Text("Cambiar foto", style: TextStyle(fontSize: 11, color: Colors.blue)),
+            ),
+          )
         ],
       ),
     );
   }
+
 
   Widget _buildInfoSection() {
     return Container(
@@ -119,13 +129,15 @@ class ProfileScreen extends StatelessWidget {
       decoration: _boxDecoration(),
       child: Column(
         children: [
-          _buildInfoRow("Identificación universitaria", "189204 8923"),
+          _buildInfoRow("Identificación universitaria", UserSession.universityId ?? 'Identificación no disponible'),
           const Divider(),
-          _buildInfoRow("Departamento", "Ingeniería en Ciencias\nInformáticas"),
+          _buildInfoRow("Departamento", UserSession.specialty ?? 'Especialidad no disponible'),
         ],
       ),
     );
   }
+
+
 
   Widget _buildInfoRow(String title, String value) {
     return Padding(
