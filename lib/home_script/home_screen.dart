@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 35),
-            const HomeHeader(), 
+            const HomeHeader(),
             CoursesPage(), 
             LiveTutorsSection(),
             BestNewCourses(),

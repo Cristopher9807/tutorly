@@ -13,13 +13,22 @@ class _LiveTutorsSectionState extends State<LiveTutorsSection> {
     return querySnapshot.docs.map((doc) {
       final data = doc.data();
       return {
+        "id": doc.id,
         "name": data['fullName'] ?? 'Sin nombre',
         "subjectCode": data['specialty'] ?? 'N/A',
-        "image": data['image'] ??
-            'https://cdn-icons-png.flaticon.com/512/194/194935.png', // imagen por defecto
+        "image": data['image'] ?? 'https://cdn-icons-png.flaticon.com/512/194/194935.png',
+        "university": data['university'] ?? '',
+        "degree": data['degree'] ?? '',
+        "about": data['about'] ?? '',
+        "price": data['price'] ?? 0,
+        "originalPrice": data['originalPrice'] ?? 0,
+        "rating": data['rating'] ?? 0.0,
+        "numRatings": data['numRatings'] ?? 0,
+        "education": data['education'] ?? [], // List<Map<String, dynamic>>
       };
     }).toList();
   }
+
 
   @override
   Widget build(BuildContext context) {

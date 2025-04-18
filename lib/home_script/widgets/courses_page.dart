@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tutorly/congrats.dart';
+import 'package:tutorly/home_script/course_details_screen.dart';
 
 class CoursesPage extends StatefulWidget {
   @override
@@ -31,13 +32,15 @@ class _CoursesPageState extends State<CoursesPage> {
           final courseData = courseDoc.data();
           allCourses.add({
             "title": courseData["subject"] ?? "Curso sin título",
+            "description": courseData["description"] ?? "Sin descripción",
+            "degree": courseData["degree"] ?? "Sin título académico",
             "instructor": tutorDoc.data()["fullName"] ?? "Instructor desconocido",
             "duration": courseData["duration"] ?? "0h",
             "price": courseData["minPrice"] ?? 0.0,
             "originalPrice": courseData["maxPrice"] ?? 0.0,
             "rating": courseData["rating"] ?? 0.0,
             "numRatings": 100 + allCourses.length * 10,
-            "image": courseData["image"] ?? "https://via.placeholder.com/150", // Puedes usar un campo real o una imagen genérica
+            "image": courseData["image"] ?? "https://via.placeholder.com/150",
           });
         }
       }
@@ -104,69 +107,79 @@ class _CoursesPageState extends State<CoursesPage> {
   }
 
   Widget _buildCourseCard(Map<String, dynamic> course) {
-    return Container(
-      width: 180,
-      margin: const EdgeInsets.only(right: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CourseDetailsScreen(courseData: course),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.network(
-              course["image"],
-              height: 100,
-              width: double.infinity,
-              fit: BoxFit.cover,
+        );
+      },
+      child: Container(
+        width: 180,
+        margin: const EdgeInsets.only(right: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  course["title"],
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${course["instructor"]} • ${course["duration"]}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('\$${course["price"]}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    if (course["originalPrice"] > course["price"])
-                      Text('\$${course["originalPrice"]}',
-                          style: const TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey)),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
-                    Text('${course["rating"]} (${course["numRatings"]})', style: const TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ],
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              child: Image.network(
+                course["image"],
+                height: 100,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    course["title"],
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${course["instructor"]} • ${course["duration"]}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('\$${course["price"]}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      if (course["originalPrice"] > course["price"])
+                        Text('\$${course["originalPrice"]}',
+                            style: const TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber, size: 16),
+                      const SizedBox(width: 4),
+                      Text('${course["rating"]} (${course["numRatings"]})', style: const TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
