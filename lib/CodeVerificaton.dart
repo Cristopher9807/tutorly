@@ -268,7 +268,6 @@ import 'package:flutter/gestures.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'EnterPhoneNumber.dart';
 import 'FullName.dart';
 
 class CodeVerification extends StatefulWidget {

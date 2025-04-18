@@ -156,7 +156,6 @@ class RoleSeparatorState extends State<RoleSeparator> {
 
 import 'package:flutter/material.dart';
 import 'package:tutorly/EnterPhoneNumber.dart';
-import 'Login.dart';
 
 class RoleSeparator extends StatefulWidget {
   const RoleSeparator({super.key});
