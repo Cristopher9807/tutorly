@@ -41,7 +41,7 @@ class _CoursesPageState extends State<CoursesPage> {
             "originalPrice": courseData["maxPrice"] ?? 0.0,
             "rating": courseData["rating"] ?? 0.0,
             "numRatings": 100 + allCourses.length * 10,
-            "image": courseData["image"] ?? "https://via.placeholder.com/150",
+            "image": courseData["image"] ?? "assets/clase.jpg",
           });
         }
       }

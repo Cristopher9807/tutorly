@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/intl_standalone.dart'; 
+import 'package:intl/intl_standalone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:tutorly/user_session.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ScheduleScreen(
+      home: const ScheduleScreen(
         courseId: '123',
         tutorId: '456',
         courseName: 'Matemáticas',
@@ -56,9 +56,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => CalendarScreen(
-        courseId: widget.courseId,
-      ),
+      builder: (_) => CalendarScreen(courseId: widget.courseId),
     );
 
     if (date != null) {
@@ -67,7 +65,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         _formattedDate = DateFormat('EEEE, d MMMM', 'es_ES').format(date);
       });
 
-      // Mostrar modal para seleccionar hora después de elegir fecha
       final result = await showModalBottomSheet<Map<String, TimeOfDay>>(
         context: context,
         backgroundColor: Colors.transparent,
@@ -87,16 +84,80 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
+  Future<void> _saveAppointment() async {
+    if (_selectedDate == null || _startTime == null || _endTime == null) {
+      print('Fecha o hora no seleccionada');
+      return;
+    }
+
+    final startDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _startTime!.hour,
+      _startTime!.minute,
+    );
+
+    final endDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _endTime!.hour,
+      _endTime!.minute,
+    );
+
+    // Verificar los valores
+    print('Fecha seleccionada: $_selectedDate');
+    print('Hora de inicio: $startDateTime');
+    print('Hora de fin: $endDateTime');
+    print('Email: ${UserSession.email}');
+    print('Full Name: ${UserSession.fullName}');
+
+    final appointment = {
+      'courseId': widget.courseId,
+      'courseName': widget.courseName,
+      'tutorId': widget.tutorId,
+      'studentEmail': UserSession.email,
+      'studentName': UserSession.fullName,
+      'isOnline': _isOnline,
+      'location': _isOnline ? null : _locationController.text.trim(),
+      'date': Timestamp.fromDate(_selectedDate!),
+      'startTime': Timestamp.fromDate(startDateTime),
+      'endTime': Timestamp.fromDate(endDateTime),
+      'status': 'scheduled',
+    };
+
+    try {
+      await FirebaseFirestore.instance.collection('appointments').add(appointment).then((docRef) {
+        print("✅ ¡Cita registrada correctamente! ID: ${docRef.id}");
+      });
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tutoría programada con éxito')),
+        
+      );
+
+      Navigator.of(context).pop();
+    } catch (e) {
+      print('Error al guardar la tutoría: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al guardar la tutoría')),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Programar tutoría'),
+        title: const Text('Programar tutoría'),
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -105,10 +166,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.courseName, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Dónde & cuándo', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
+            Text(widget.courseName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Dónde & cuándo', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Checkbox(
@@ -119,12 +180,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     });
                   },
                 ),
-                Text('Estudiaré en línea'),
+                const Text('Estudiaré en línea'),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (!_isOnline) ...[
-              Text('Dónde?'),
+              const Text('Dónde?'),
               TextFormField(
                 controller: _locationController,
                 decoration: InputDecoration(
@@ -132,9 +193,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
-            Text('Cuándo?'),
+            const Text('Cuándo?'),
             GestureDetector(
               onTap: _openCalendarModal,
               child: AbsorbPointer(
@@ -142,45 +203,23 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   decoration: InputDecoration(
                     hintText: 'Elige una fecha',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                    suffixIcon: Icon(Icons.calendar_today),
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
                   controller: TextEditingController(text: _formattedDate),
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (_startTime != null && _endTime != null)
               Text(
                 'De ${_startTime!.format(context)} a ${_endTime!.format(context)}',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                if (_selectedDate != null && _startTime != null && _endTime != null) {
-                  // Aquí puedes enviar la información al backend o a Firestore
-                  final appointment = {
-                    'courseId': widget.courseId,
-                    'tutorId': widget.tutorId,
-                    'courseName': widget.courseName,
-                    'isOnline': _isOnline,
-                    'location': _locationController.text,
-                    'date': _selectedDate!.toIso8601String(),
-                    'startTime': _startTime!.format(context),
-                    'endTime': _endTime!.format(context),
-                  };
-
-                  print('Programación enviada: $appointment');
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Tutoría programada con éxito')),
-                  );
-
-                  Navigator.of(context).pop(); // O ir a una pantalla de confirmación
-                }
-              },
+              onPressed: _saveAppointment,
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: Text('Confirmar tutoría', style: TextStyle(color: Colors.white)),
+              child: const Text('Confirmar tutoría', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -339,7 +378,7 @@ class _TimePickerScreenState extends State<TimePickerScreen> {
   TimeOfDay? _endTime;
 
   Future<bool> _isTimeAvailable(TimeOfDay? startTime, TimeOfDay? endTime) async {
-  // Verificar si los horarios son válidos (no nulos)
+    // Verificar si los horarios son válidos (no nulos)
     if (startTime == null || endTime == null) {
       return false; // Si algún horario es nulo, consideramos que no está disponible.
     }
@@ -363,8 +402,8 @@ class _TimePickerScreenState extends State<TimePickerScreen> {
     // Consultar Firestore para obtener citas existentes y verificar si hay algún solapamiento
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('appointments')
-        .where('startTime', isGreaterThanOrEqualTo: startDateTime)
-        .where('endTime', isLessThanOrEqualTo: endDateTime)
+        .where('startTime', isLessThanOrEqualTo: endDateTime)
+        .where('endTime', isGreaterThanOrEqualTo: startDateTime)
         .get();
 
     // Si la consulta devuelve resultados, significa que hay una cita en ese intervalo de tiempo
@@ -458,7 +497,7 @@ class _TimePickerScreenState extends State<TimePickerScreen> {
                 _isTimeAvailable(_startTime, _endTime).then((isAvailable) {
                   if (isAvailable) {
                     // Si los horarios están disponibles, se confirma la tutoría.
-                    Navigator.of(context).pop({'start': _startTime, 'end': _endTime});
+                    Navigator.of(context).pop(<String, TimeOfDay>{'start': _startTime!, 'end': _endTime!});
                   } else {
                     // Si no están disponibles, mostramos un mensaje de error.
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -475,3 +514,4 @@ class _TimePickerScreenState extends State<TimePickerScreen> {
     );
   }
 }
+

@@ -5,6 +5,7 @@ import 'congrats.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'user_session.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart'; // 👈 Import necesario
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,17 +13,23 @@ void main() async {
   // Inicializa Firebase
   await Firebase.initializeApp();
 
-  // Configura el locale predeterminado
-  Intl.defaultLocale = 'es_ES'; // Cambia 'es_ES' por el locale que necesites (por ejemplo, 'en_US')
+  // Inicializa los datos de localización
+  await initializeDateFormatting('es_ES', null); // 👈 Esto es crítico
+  print(DateFormat.yMMMMEEEEd('es_ES').format(DateTime.now()));
+
+  // Establece locale por defecto
+  Intl.defaultLocale = 'es_ES';
 
   // Verifica si hay un usuario autenticado
   User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
-    UserSession.fromFirebase(user); // opcional pero útil
+    UserSession.fromFirebase(user);
   }
 
-  runApp(MainApp(initialRoute: user != null ? '/home' : '/login'));
+  runApp(MainApp(initialRoute: user != null ? '/home' : '/'));
+  
 }
+
 
 class MainApp extends StatelessWidget {
   final String initialRoute;
@@ -33,7 +40,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter App',
-      initialRoute: initialRoute,  // Usa el valor de initialRoute que pasas al constructor
+      initialRoute: initialRoute,
       routes: {
         '/': (context) => Onboarding1(),
         '/Congrats': (context) => Congrats(), 

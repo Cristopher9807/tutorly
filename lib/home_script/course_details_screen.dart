@@ -12,7 +12,7 @@ class CourseDetailsScreen extends StatelessWidget {
     final title = courseData['title'] ?? 'Sin título';
     final degree = courseData['degree'] ?? 'Sin título académico';
     final description = courseData['description'] ?? 'Sin descripción';
-    final image = courseData['image'] ?? 'https://via.placeholder.com/150';
+    final image = courseData['image'] ?? 'assets/clase.jpg';
     final rating = courseData['rating'] ?? 0.0;
 
     return Scaffold(
@@ -136,7 +136,7 @@ class CourseDetailsScreen extends StatelessWidget {
                                     CircleAvatar(
                                       radius: 28,
                                       backgroundImage: NetworkImage(
-                                        tutor['photoUrl'] ?? 'https://via.placeholder.com/100',
+                                        tutor['photoUrl'] ?? 'assets/clase.jpg',
                                       ),
                                     ),
                                     SizedBox(width: 12),
