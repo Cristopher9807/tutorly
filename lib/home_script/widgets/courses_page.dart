@@ -31,6 +31,7 @@ class _CoursesPageState extends State<CoursesPage> {
         for (var courseDoc in coursesSnapshot.docs) {
           final courseData = courseDoc.data();
           allCourses.add({
+            "id": courseDoc.id ?? 'defaultId', // Asegura que 'id' no sea nulo
             "title": courseData["subject"] ?? "Curso sin título",
             "description": courseData["description"] ?? "Sin descripción",
             "degree": courseData["degree"] ?? "Sin título académico",

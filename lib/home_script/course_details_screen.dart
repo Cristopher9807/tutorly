@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tutorly/schedule_screen.dart';
 
 class CourseDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> courseData;
@@ -113,13 +114,14 @@ class CourseDetailsScreen extends StatelessWidget {
 
                       final tutors = snapshot.data!.docs;
                       if (tutors.isEmpty) return Text('No se encontró el tutor.');
-
                       return ListView.builder(
                         itemCount: tutors.length,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           final tutor = tutors[index].data() as Map<String, dynamic>;
+                          final tutorId = tutors[index].id;
+
                           return Container(
                             margin: EdgeInsets.symmetric(vertical: 8),
                             padding: EdgeInsets.all(12),
@@ -127,32 +129,58 @@ class CourseDetailsScreen extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Row(
+                            child: Column(
                               children: [
-                                CircleAvatar(
-                                  radius: 28,
-                                  backgroundImage: NetworkImage(
-                                    tutor['photoUrl'] ?? 'https://via.placeholder.com/100',
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(tutor['fullName'] ?? '', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Text(tutor['university'] ?? '', style: TextStyle(color: Colors.grey[600])),
-                                      Row(
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: NetworkImage(
+                                        tutor['photoUrl'] ?? 'https://via.placeholder.com/100',
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Icon(Icons.star, color: Colors.orange, size: 16),
-                                          SizedBox(width: 4),
-                                          Text('$rating', style: TextStyle(color: Colors.orange)),
+                                          Text(tutor['fullName'] ?? '', style: TextStyle(fontWeight: FontWeight.bold)),
+                                          Text(tutor['university'] ?? '', style: TextStyle(color: Colors.grey[600])),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.star, color: Colors.orange, size: 16),
+                                              SizedBox(width: 4),
+                                              Text('$rating', style: TextStyle(color: Colors.orange)),
+                                            ],
+                                          ),
                                         ],
                                       ),
-                                    ],
+                                    ),
+                                    Text('\$${tutor['minPrice'] ?? 0}', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                                SizedBox(height: 12),
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ScheduleScreen(
+                                          courseId: courseData['id']?.toString() ?? 'defaultId', // Proporciona un valor por defecto
+                                          courseName: courseData['title'] ?? 'Sin título', // Proporciona un valor por defecto
+                                          tutorId: tutorId,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(Icons.calendar_today),
+                                  label: Text('Programar tutoría'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   ),
                                 ),
-                                Text('\$${tutor['minPrice'] ?? 0}', style: TextStyle(fontWeight: FontWeight.bold)),
                               ],
                             ),
                           );
