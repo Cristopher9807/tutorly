@@ -31,6 +31,7 @@ class _CoursesPageState extends State<CoursesPage> {
         for (var courseDoc in coursesSnapshot.docs) {
           final courseData = courseDoc.data();
           allCourses.add({
+            "id": courseDoc.id ?? 'defaultId', // Asegura que 'id' no sea nulo
             "title": courseData["subject"] ?? "Curso sin título",
             "description": courseData["description"] ?? "Sin descripción",
             "degree": courseData["degree"] ?? "Sin título académico",
@@ -40,7 +41,7 @@ class _CoursesPageState extends State<CoursesPage> {
             "originalPrice": courseData["maxPrice"] ?? 0.0,
             "rating": courseData["rating"] ?? 0.0,
             "numRatings": 100 + allCourses.length * 10,
-            "image": courseData["image"] ?? "https://via.placeholder.com/150",
+            "image": courseData["image"] ?? "assets/clase.jpg",
           });
         }
       }
