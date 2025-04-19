@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:tutorly/Onboarding1.dart';
+
 //import 'Intro.dart'; // Asegúrate de que este archivo esté en la misma carpeta o ajusta la ruta.
 import 'package:firebase_core/firebase_core.dart';
 //import 'firebase_options.dart';
@@ -39,3 +40,28 @@ class MainApp extends StatelessWidget {
     );
   }
 }
+*/
+
+import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'ScheduleScreen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('es_ES', null);
+  runApp(MyApp());
+}
+
+
+class TutorlyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tutorly',
+      debugShowCheckedModeBanner: false,
+      home: ScheduleScreen(),  // Sólo mostramos esta pantalla
+    );
+  }
+}
+
+
