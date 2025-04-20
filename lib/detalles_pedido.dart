@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:tutorly/home_script/menu/perfil.dart';
 import 'dart:math';
-import 'package:tutorly/PaymentScreen.dart' as pantalla_pago;
+import 'package:tutorly/payment_screen.dart' as pantalla_pago;
 
 
 class DetallesPedido extends StatefulWidget {

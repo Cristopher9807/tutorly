@@ -110,11 +110,8 @@ class SideMenu extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const Congrats()));
                 }),
                 _buildMenuItem(Icons.play_circle_fill, "Mis cursos", () async {
-                  await uploadTutorsWithCourses();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Congrats()),
-                  );
+                  //await createTutorAuthAccounts();
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Congrats()),);
                 }),
                 _buildMenuItem(Icons.star, "Valoración y reseñas", () {
                   //Navigator.push(context, MaterialPageRoute(builder: (context) => const RatingsAndReviewsScreen()));

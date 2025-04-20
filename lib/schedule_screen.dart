@@ -31,17 +31,20 @@ class ScheduleScreen extends StatefulWidget {
   final String courseId;
   final String tutorId;
   final String courseName;
+  final VoidCallback? onScheduled; // Nuevo parámetro opcional
 
   const ScheduleScreen({
     Key? key,
     required this.courseId,
     required this.tutorId,
     required this.courseName,
+    this.onScheduled,
   }) : super(key: key);
 
   @override
   State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
+
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   bool _isOnline = false;
@@ -122,8 +125,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       'isOnline': _isOnline,
       'location': _isOnline ? null : _locationController.text.trim(),
       'date': Timestamp.fromDate(_selectedDate!),
-      'startTime': Timestamp.fromDate(startDateTime),
-      'endTime': Timestamp.fromDate(endDateTime),
+      'startTime': Timestamp.fromDate(startDateTime.toLocal()),
+      'endTime': Timestamp.fromDate(endDateTime.toLocal()),
       'status': 'scheduled',
     };
 
@@ -137,7 +140,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         const SnackBar(content: Text('Tutoría programada con éxito')),
         
       );
-
+      // Llama al callback si se definió
+      widget.onScheduled?.call(); 
       Navigator.of(context).pop();
     } catch (e) {
       print('Error al guardar la tutoría: $e');
@@ -233,7 +237,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 class CalendarScreen extends StatefulWidget {
   final String courseId;
 
-  const CalendarScreen({super.key, required this.courseId});
+  const CalendarScreen({Key? key, required this.courseId}) : super(key: key);
 
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
@@ -244,12 +248,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime? _selectedDate;
 
   Future<List<DateTime>> _getAvailableDates() async {
-    // Lógica para obtener fechas disponibles del curso (desde la base de datos)
-    return [
-      DateTime(_focusedMonth.year, _focusedMonth.month, 15),
-      DateTime(_focusedMonth.year, _focusedMonth.month, 20),
-      DateTime(_focusedMonth.year, _focusedMonth.month, 25),
-    ]; 
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('courses')
+          .doc(widget.courseId)
+          .get();
+
+      if (!doc.exists) return [];
+
+      final List<String> availableWeekdays = List<String>.from(doc['availableDays']);
+
+      final dayMap = {
+        'Lunes': DateTime.monday,
+        'Martes': DateTime.tuesday,
+        'Miércoles': DateTime.wednesday,
+        'Jueves': DateTime.thursday,
+        'Viernes': DateTime.friday,
+        'Sábado': DateTime.saturday,
+        'Domingo': DateTime.sunday,
+      };
+
+      final availableDayNumbers = availableWeekdays
+          .where((d) => dayMap.containsKey(d))
+          .map((d) => dayMap[d]!)
+          .toList();
+
+      final daysInMonth = DateUtils.getDaysInMonth(_focusedMonth.year, _focusedMonth.month);
+      final dates = <DateTime>[];
+
+      for (int i = 1; i <= daysInMonth; i++) {
+        final date = DateTime(_focusedMonth.year, _focusedMonth.month, i);
+        if (availableDayNumbers.contains(date.weekday)) {
+          dates.add(date);
+        }
+      }
+
+      return dates;
+    } catch (e) {
+      print("Error al obtener fechas disponibles: $e");
+      return [];
+    }
   }
 
   @override
