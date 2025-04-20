@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 Future<void> uploadTutorsWithCourses() async {
@@ -328,4 +328,27 @@ Future<void> uploadTutorsWithCourses() async {
   }
 
   print("✅ Todos los tutores y cursos fueron subidos correctamente.");
+}
+
+Future<void> createTutorAuthAccounts() async {
+  final emails = [
+    "pedroexample@gmail.com",
+    "julia.anatole@gmail.com",
+    "jacob.jones@gmail.com",
+    "lucia.fernandez@gmail.com",
+    "eleanor.pena@gmail.com",
+    "andres.rojas@gmail.com",
+  ];
+
+  for (var email in emails) {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: "tutor123", // Usa una contraseña común temporal
+      );
+      print("Cuenta creada: $email");
+    } catch (e) {
+      print("Error creando cuenta para $email: $e");
+    }
+  }
 }
