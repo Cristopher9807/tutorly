@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tutorly/user_session.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -19,9 +21,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const ScheduleScreen(
-        courseId: '123',
-        tutorId: '456',
-        courseName: 'Matemáticas',
+        courseId: '9ocu4dVB7ea8W65vmrem',
+        tutorId: 'andres.rojas@gmail.com',
+        courseName: 'GDEV 101',
+        //availableDays: ['Lunes']
       ),
     );
   }
@@ -31,6 +34,7 @@ class ScheduleScreen extends StatefulWidget {
   final String courseId;
   final String tutorId;
   final String courseName;
+  //final List<String> availableDays;
   final VoidCallback? onScheduled; // Nuevo parámetro opcional
 
   const ScheduleScreen({
@@ -38,6 +42,7 @@ class ScheduleScreen extends StatefulWidget {
     required this.courseId,
     required this.tutorId,
     required this.courseName,
+    //required this.availableDays,
     this.onScheduled,
   }) : super(key: key);
 
@@ -53,6 +58,51 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   String? _formattedDate;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
+  String? _courseDifficulty;
+  List<String> _availableDays = [];
+  bool _isDateAvailable = false; // Variable para controlar si la fecha es válida
+
+  @override
+  void initState() {
+    super.initState();
+    print('📘 Curso: ${widget.courseName}');
+    print('👨‍🏫 Tutor ID: ${widget.tutorId}');
+    print('📚 Course ID: ${widget.courseId}');
+    _fetchCourseDifficulty();
+  }
+
+  Future<void> _fetchCourseDifficulty() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('tutors')
+          .doc(widget.tutorId)
+          .collection('courses')
+          .doc(widget.courseId)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data();
+        final difficulty = data?['difficulty'];
+        final days = data?['availableDays'];
+
+        setState(() {
+          _courseDifficulty = difficulty is String ? difficulty : 'Desconocida';
+          
+          // Convertir los días disponibles a minúsculas
+          _availableDays = (days is List)
+              ? List<String>.from(days.map((day) => (day as String).toLowerCase()))
+              : [];
+        });
+
+        print('📚 Dificultad del curso: $_courseDifficulty');
+        print('📆 Días disponibles: $_availableDays');
+      } else {
+        print('⚠️ Curso no encontrado');
+      }
+    } catch (e) {
+      print('❌ Error al obtener dificultad del curso: $e');
+    }
+  }
 
   Future<void> _openCalendarModal() async {
     final date = await showModalBottomSheet<DateTime>(
@@ -63,93 +113,124 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
 
     if (date != null) {
+      final dayName = DateFormat('EEEE', 'es_ES').format(date).toLowerCase();
+
+      final isAvailable = _availableDays.contains(dayName);
+
       setState(() {
         _selectedDate = date;
         _formattedDate = DateFormat('EEEE, d MMMM', 'es_ES').format(date);
+        _isDateAvailable = isAvailable;
+        _startTime = null;
+        _endTime = null;
       });
 
-      final result = await showModalBottomSheet<Map<String, TimeOfDay>>(
+      if (!isAvailable) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('El curso no está disponible ese día. Días disponibles: $_availableDays')),
+        );
+        return;
+      }
+
+      // ✅ Elegir hora de inicio
+      final pickedStartTime = await showTimePicker(
         context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (_) => TimePickerScreen(
-          selectedDate: _selectedDate!,
-          courseId: widget.courseId,
-        ),
+        initialTime: TimeOfDay.now(),
       );
 
-      if (result != null) {
-        setState(() {
-          _startTime = result['start'];
-          _endTime = result['end'];
-        });
+      if (pickedStartTime != null) {
+        final defaultEndTime = TimeOfDay(
+          hour: (pickedStartTime.hour + 1) % 24,
+          minute: pickedStartTime.minute,
+        );
+
+        // ✅ Elegir hora de fin
+        final pickedEndTime = await showTimePicker(
+          context: context,
+          initialTime: defaultEndTime,
+        );
+
+        if (pickedEndTime != null) {
+          setState(() {
+            _startTime = pickedStartTime;
+            _endTime = pickedEndTime;
+          });
+        }
       }
     }
   }
 
-  Future<void> _saveAppointment() async {
-    if (_selectedDate == null || _startTime == null || _endTime == null) {
-      print('Fecha o hora no seleccionada');
-      return;
-    }
-
-    final startDateTime = DateTime(
-      _selectedDate!.year,
-      _selectedDate!.month,
-      _selectedDate!.day,
-      _startTime!.hour,
-      _startTime!.minute,
-    );
-
-    final endDateTime = DateTime(
-      _selectedDate!.year,
-      _selectedDate!.month,
-      _selectedDate!.day,
-      _endTime!.hour,
-      _endTime!.minute,
-    );
-
-    // Verificar los valores
-    print('Fecha seleccionada: $_selectedDate');
-    print('Hora de inicio: $startDateTime');
-    print('Hora de fin: $endDateTime');
-    print('Email: ${UserSession.email}');
-    print('Full Name: ${UserSession.fullName}');
-
-    final appointment = {
-      'courseId': widget.courseId,
-      'courseName': widget.courseName,
-      'tutorId': widget.tutorId,
-      'studentEmail': UserSession.email,
-      'studentName': UserSession.fullName,
-      'isOnline': _isOnline,
-      'location': _isOnline ? null : _locationController.text.trim(),
-      'date': Timestamp.fromDate(_selectedDate!),
-      'startTime': Timestamp.fromDate(startDateTime.toLocal()),
-      'endTime': Timestamp.fromDate(endDateTime.toLocal()),
-      'status': 'scheduled',
-    };
-
-    try {
-      await FirebaseFirestore.instance.collection('appointments').add(appointment).then((docRef) {
-        print("✅ ¡Cita registrada correctamente! ID: ${docRef.id}");
-      });
-
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tutoría programada con éxito')),
-        
-      );
-      // Llama al callback si se definió
-      widget.onScheduled?.call(); 
-      Navigator.of(context).pop();
-    } catch (e) {
-      print('Error al guardar la tutoría: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al guardar la tutoría')),
-      );
-    }
+Future<void> _saveAppointment() async {
+  if (_selectedDate == null || _startTime == null || _endTime == null) {
+    print('Fecha o hora no seleccionada');
+    return;
   }
+
+  final startDateTime = DateTime(
+    _selectedDate!.year,
+    _selectedDate!.month,
+    _selectedDate!.day,
+    _startTime!.hour,
+    _startTime!.minute,
+  );
+
+  final endDateTime = DateTime(
+    _selectedDate!.year,
+    _selectedDate!.month,
+    _selectedDate!.day,
+    _endTime!.hour,
+    _endTime!.minute,
+  );
+
+  // Verificar si ya existe una cita a esa hora
+  final querySnapshot = await FirebaseFirestore.instance
+      .collection('appointments')
+      .where('startTime', isEqualTo: Timestamp.fromDate(startDateTime.toLocal()))
+      .where('tutorId', isEqualTo: widget.tutorId)
+      .get();
+
+  if (querySnapshot.docs.isNotEmpty) {
+    // Si ya existe una cita, mostrar un mensaje
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Ya existe una cita a esa hora, por favor elige otra hora.')),
+    );
+    return;  // No continuar guardando la cita
+  }
+
+  // Si no existe una cita a esa hora, guardar la nueva cita
+  final appointment = {
+    'courseId': widget.courseId,
+    'courseName': widget.courseName,
+    'tutorId': widget.tutorId,
+    'studentEmail': UserSession.email,
+    'studentName': UserSession.fullName,
+    'isOnline': _isOnline,
+    'location': _isOnline ? null : _locationController.text.trim(),
+    'date': Timestamp.fromDate(_selectedDate!),
+    'startTime': Timestamp.fromDate(startDateTime.toLocal()),
+    'endTime': Timestamp.fromDate(endDateTime.toLocal()),
+    'status': 'scheduled',
+  };
+
+  try {
+    await FirebaseFirestore.instance.collection('appointments').add(appointment).then((docRef) {
+      print("✅ ¡Cita registrada correctamente! ID: ${docRef.id}");
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Tutoría programada con éxito')),
+    );
+    // Llama al callback si se definió
+    widget.onScheduled?.call();
+    Navigator.of(context).pop();
+  } catch (e) {
+    print('Error al guardar la tutoría: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Error al guardar la tutoría')),
+    );
+  }
+}
+
 
 
   @override
@@ -221,7 +302,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _saveAppointment,
+              onPressed: _isDateAvailable ? _saveAppointment : null, // Botón deshabilitado si la fecha no es válida
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               child: const Text('Confirmar tutoría', style: TextStyle(color: Colors.white)),
             ),
@@ -234,6 +315,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
 // ---------- Pantalla Calendario Modal ----------
 
+
 class CalendarScreen extends StatefulWidget {
   final String courseId;
 
@@ -241,163 +323,87 @@ class CalendarScreen extends StatefulWidget {
 
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
+  
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  DateTime _focusedMonth = DateTime.now();
-  DateTime? _selectedDate;
-
-  Future<List<DateTime>> _getAvailableDates() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('courses')
-          .doc(widget.courseId)
-          .get();
-
-      if (!doc.exists) return [];
-
-      final List<String> availableWeekdays = List<String>.from(doc['availableDays']);
-
-      final dayMap = {
-        'Lunes': DateTime.monday,
-        'Martes': DateTime.tuesday,
-        'Miércoles': DateTime.wednesday,
-        'Jueves': DateTime.thursday,
-        'Viernes': DateTime.friday,
-        'Sábado': DateTime.saturday,
-        'Domingo': DateTime.sunday,
-      };
-
-      final availableDayNumbers = availableWeekdays
-          .where((d) => dayMap.containsKey(d))
-          .map((d) => dayMap[d]!)
-          .toList();
-
-      final daysInMonth = DateUtils.getDaysInMonth(_focusedMonth.year, _focusedMonth.month);
-      final dates = <DateTime>[];
-
-      for (int i = 1; i <= daysInMonth; i++) {
-        final date = DateTime(_focusedMonth.year, _focusedMonth.month, i);
-        if (availableDayNumbers.contains(date.weekday)) {
-          dates.add(date);
-        }
-      }
-
-      return dates;
-    } catch (e) {
-      print("Error al obtener fechas disponibles: $e");
-      return [];
-    }
-  }
-
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay = DateTime.now(); // Día seleccionado por defecto
+  
   @override
   Widget build(BuildContext context) {
-    final daysInMonth = DateUtils.getDaysInMonth(_focusedMonth.year, _focusedMonth.month);
-    final firstWeekday = DateTime(_focusedMonth.year, _focusedMonth.month, 1).weekday;
-
     return Container(
-      margin: EdgeInsets.only(top: 100),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: FutureBuilder<List<DateTime>>(
-        future: _getAvailableDates(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
-
-          final availableDates = snapshot.data ?? [];
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left),
-                    onPressed: () {
-                      setState(() {
-                        _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1);
-                      });
-                    },
-                  ),
-                  Text(
-                    DateFormat('MMMM', 'es_ES').format(_focusedMonth).toUpperCase(),
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.chevron_right),
-                    onPressed: () {
-                      setState(() {
-                        _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1);
-                      });
-                    },
-                  ),
-                ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Selecciona una fecha',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          TableCalendar(
+            firstDay: DateTime.utc(2023, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) {
+              // Solo el seleccionado aparece resaltado
+              return isSameDay(_selectedDay, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
+            onPageChanged: (focusedDay) {
+              // Actualiza el mes visible
+              _focusedDay = focusedDay;
+            },
+            calendarStyle: const CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
               ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: ['LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB', 'DOM']
-                    .map((d) => Expanded(child: Center(child: Text(d))))
-                    .toList(),
+              todayTextStyle: TextStyle(
+                color: Colors.blueGrey,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 8),
-              Flexible(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  itemCount: daysInMonth + firstWeekday - 1,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 7,
-                    mainAxisExtent: 40,
-                  ),
-                  itemBuilder: (context, index) {
-                    if (index < firstWeekday - 1) return SizedBox();
-                    final day = index - firstWeekday + 2;
-                    final date = DateTime(_focusedMonth.year, _focusedMonth.month, day);
-                    final isSelected = _selectedDate != null &&
-                        _selectedDate!.year == date.year &&
-                        _selectedDate!.month == date.month &&
-                        _selectedDate!.day == date.day;
-                    final isAvailable = availableDates.contains(date);
-
-                    return GestureDetector(
-                      onTap: isAvailable
-                          ? () {
-                              setState(() {
-                                _selectedDate = date;
-                              });
-                              Navigator.of(context).pop(date);
-                            }
-                          : null,
-                      child: Container(
-                        margin: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: isAvailable ? Colors.blue : Colors.grey,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '$day',
-                            style: TextStyle(color: isSelected ? Colors.white : Colors.black),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.deepPurple,
+                shape: BoxShape.circle,
               ),
-            ],
-          );
-        },
+              selectedTextStyle: TextStyle(color: Colors.white),
+            ),
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+              leftChevronIcon: Icon(Icons.chevron_left),
+              rightChevronIcon: Icon(Icons.chevron_right),
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: _selectedDay != null
+                ? () => Navigator.pop(context, _selectedDay)
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Text('Confirmar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
 }
+
 
 // ---------- Pantalla Hora Modal ----------
 
@@ -552,4 +558,3 @@ class _TimePickerScreenState extends State<TimePickerScreen> {
     );
   }
 }
-

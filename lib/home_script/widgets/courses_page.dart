@@ -26,12 +26,16 @@ class _CoursesPageState extends State<CoursesPage> {
       final tutorsSnapshot = await firestore.collection('tutors').get();
 
       for (var tutorDoc in tutorsSnapshot.docs) {
-        final coursesSnapshot = await tutorDoc.reference.collection('courses').get();
+        final coursesSnapshot = await tutorDoc.reference
+        .collection('courses')
+        .orderBy('rating', descending: true)
+        .limit(5)
+        .get();
 
         for (var courseDoc in coursesSnapshot.docs) {
           final courseData = courseDoc.data();
           allCourses.add({
-            "id": courseDoc.id ?? 'defaultId', // Asegura que 'id' no sea nulo
+            "id": courseDoc.id, // Asegura que 'id' no sea nulo
             "title": courseData["subject"] ?? "Curso sin título",
             "description": courseData["description"] ?? "Sin descripción",
             "degree": courseData["degree"] ?? "Sin título académico",
@@ -74,9 +78,8 @@ class _CoursesPageState extends State<CoursesPage> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Congrats()),
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Esta funcionalidad aún no está disponible")),
                   );
                 },
                 child: const Text(
@@ -84,13 +87,19 @@ class _CoursesPageState extends State<CoursesPage> {
                   style: TextStyle(fontSize: 14, color: Colors.blue),
                 ),
               ),
+
             ],
           ),
           const SizedBox(height: 10),
           if (isLoading)
             const Center(child: CircularProgressIndicator())
           else if (courses.isEmpty)
-            const Text("No hay cursos disponibles.")
+            const Center(
+              child: Text(
+                "No hay cursos disponibles.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            )
           else
             SizedBox(
               height: 230,
@@ -141,6 +150,14 @@ class _CoursesPageState extends State<CoursesPage> {
                 height: 100,
                 width: double.infinity,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/clase.jpg', // Imagen por defecto
+                    height: 100,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
             ),
             Padding(

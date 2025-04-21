@@ -22,8 +22,8 @@ class CongratsState extends State<Congrats> {
                 // Imagen de confeti
                 SizedBox(
                   width: double.infinity,
-                  child: Image.network(
-                    "https://storage.googleapis.com/tagjs-prod.appspot.com/VuZ5hgGxQ3/r21o6dv4.png", 
+                  child: Image.asset(
+                    "assets/confetti.png", 
                     fit: BoxFit.contain,
                   ),
                 ),

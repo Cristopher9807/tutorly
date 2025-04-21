@@ -135,9 +135,10 @@ class CourseDetailsScreen extends StatelessWidget {
                                   children: [
                                     CircleAvatar(
                                       radius: 28,
-                                      backgroundImage: NetworkImage(
-                                        tutor['photoUrl'] ?? 'assets/clase.jpg',
-                                      ),
+                                      backgroundImage: tutor['photoUrl'] != null
+                                      ? NetworkImage(tutor['photoUrl'])
+                                      : AssetImage('assets/clase.jpg') as ImageProvider,
+
                                     ),
                                     SizedBox(width: 12),
                                     Expanded(
