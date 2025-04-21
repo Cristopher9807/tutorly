@@ -17,6 +17,7 @@ dependencies:
   country_picker: ^2.0.20  # Usa la última versión estable disponible
   google_fonts: ^6.2.1
   intl: ^0.20.2
+  flutter_screenutil: ^5.7.0
   table_calendar: ^3.2.0
 
 dev_dependencies:

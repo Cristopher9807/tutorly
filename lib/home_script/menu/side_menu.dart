@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tutorly/role_separator.dart';
 import 'perfil.dart';
 import 'package:tutorly/congrats.dart';
-import 'reviews.dart';
-import 'package:tutorly/login.dart';
-import 'package:tutorly/firestore_service.dart';
 import 'package:tutorly/user_session.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

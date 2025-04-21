@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// IMPORTA TUS PANTALLAS REALES:
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'role_separator.dart';
 import 'Onboarding2.dart';
 
@@ -13,173 +13,171 @@ class Onboarding1 extends StatefulWidget {
 class Onboarding1State extends State<Onboarding1> {
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: const Size(375, 812));
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              children: [
+                SizedBox(height: 40.h),
 
-              // --- IMAGEN PRINCIPAL ---
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
-                child: Image.asset(
-                  'assets/stress.png', // Ajusta la ruta si es distinta
-                  fit: BoxFit.fill,
+                // --- IMAGEN PRINCIPAL ---
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 22.w),
+                  child: Image.asset(
+                    'assets/stress.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 24),
+                SizedBox(height: 24.h),
 
-              // --- TÍTULO ---
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 44),
-                child: Text(
-                  "Supera tus dificultades",
-                  style: const TextStyle(
-                    color: Color(0xFF0760FB),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                // --- TÍTULO ---
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Text(
+                    "Supera tus dificultades",
+                    style: TextStyle(
+                      color: const Color(0xFF0760FB),
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 16),
 
-              // --- DESCRIPCIÓN ---
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 34),
-                child: Text(
-                  "¿Hay temas que te resultan difíciles? No te frustres, aquí estamos para ayudarte a aprender de la mejor manera.",
-                  style: const TextStyle(
-                    color: Color(0xFF475569),
-                    fontSize: 14,
+                SizedBox(height: 16.h),
+
+                // --- DESCRIPCIÓN ---
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Text(
+                    "¿Hay temas que te resultan difíciles? No te frustres, aquí estamos para ayudarte a aprender de la mejor manera.",
+                    style: TextStyle(
+                      color: const Color(0xFF475569),
+                      fontSize: 14.sp,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 24),
 
-              // --- INDICADOR (DOTS) ---
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Rectángulo redondeado (activo)
-                  Container(
-                    width: 21,
-                    height: 9,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF0760FB), // Azul
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  const SizedBox(width: 8), // Espacio entre elementos
+                SizedBox(height: 24.h),
 
-                  // Círculo vacío
-                  Container(
-                    width: 9,
-                    height: 9,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Color(0xFF0760FB), // Azul
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8), // Espacio entre elementos
-
-                  // Círculo vacío
-                  Container(
-                    width: 9,
-                    height: 9,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Color(0xFF0760FB), // Azul
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 30),
-
-              // --- BOTONES "SALTAR" Y "CONTINUAR" ---
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // --- INDICADOR (DOTS) ---
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Botón "Saltar"
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const RoleSeparator()),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xFF0760FB),
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          color: const Color(0xFFCDE6FE),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0x12344054),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
+                    Container(
+                      width: 21.w,
+                      height: 9.h,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0760FB),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Container(
+                      width: 9.w,
+                      height: 9.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFF0760FB),
+                          width: 2.w,
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 17),
-                        width: 157,
-                        child: const Center(
-                          child: Text(
-                            "Saltar",
-                            style: TextStyle(
-                              color: Color(0xFF0760FB),
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Container(
+                      width: 9.w,
+                      height: 9.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFF0760FB),
+                          width: 2.w,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 30.h),
+
+                // --- BOTONES ---
+                Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const RoleSeparator()),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xFF0760FB),
+                              width: 1.w,
+                            ),
+                            borderRadius: BorderRadius.circular(10.r),
+                            color: const Color(0xFFCDE6FE),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0x12344054),
+                                blurRadius: 2.r,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 17.h),
+                          child: Center(
+                            child: Text(
+                              "Saltar",
+                              style: TextStyle(
+                                color: const Color(0xFF0760FB),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-
-                    // Botón "Continuar"
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const Onboarding2()),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: const Color(0xFF0760FB),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0x12344054),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 17),
-                        width: 157,
-                        child: const Center(
-                          child: Text(
-                            "Continuar",
-                            style: TextStyle(
-                              color: Color(0xFFFFFFFF),
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const Onboarding2()),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                            color: const Color(0xFF0760FB),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0x12344054),
+                                blurRadius: 2.r,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 17.h),
+                          child: Center(
+                            child: Text(
+                              "Continuar",
+                              style: TextStyle(
+                                color: const Color(0xFFFFFFFF),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -187,13 +185,11 @@ class Onboarding1State extends State<Onboarding1> {
                     ),
                   ],
                 ),
-              ),
 
-              const SizedBox(height: 30),
-
-              
-              const SizedBox(height: 20),
-            ],
+                SizedBox(height: 30.h),
+                SizedBox(height: 20.h),
+              ],
+            ),
           ),
         ),
       ),
