@@ -1,5 +1,8 @@
-// Archivo: home_screen_tutor.dart
 import 'package:flutter/material.dart';
+import 'my_courses_widget.dart';
+import 'my_appointments_widget.dart';
+import 'package:tutorly/home_script/menu/side_menu.dart';
+import 'create_course.dart';
 
 class HomeScreenTutor extends StatefulWidget {
   const HomeScreenTutor({super.key});
@@ -30,10 +33,14 @@ class _HomeScreenTutorState extends State<HomeScreenTutor> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {
-            // TODO: Abrir menú de navegación lateral
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.black),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();  // Abre el menú lateral
+              },
+            );
           },
         ),
         actions: [
@@ -65,12 +72,17 @@ class _HomeScreenTutorState extends State<HomeScreenTutor> {
               padding: EdgeInsets.zero,
               icon: const Icon(Icons.add, color: Colors.black, size: 18),
               onPressed: () {
-                // TODO: Acción al presionar el botón de añadir
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreateCourseScreen()), // Navega a la pantalla de crear curso
+                );
               },
             ),
           ),
         ],
       ),
+      drawer: const SideMenu(),  // Aquí se añade el SideMenu como el Drawer.
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
@@ -136,46 +148,8 @@ class _HomeScreenTutorState extends State<HomeScreenTutor> {
             const SizedBox(height: 12),
             Expanded(
               child: mostrarCursos
-                  ? const Center(child: Text("Aquí se mostrarán tus cursos"))
-                  : ListView.builder(
-                      itemCount: citas.length,
-                      itemBuilder: (context, index) {
-                        final cita = citas[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(cita["avatar"]!),
-                                radius: 24,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      cita["nombre"]!,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      cita["universidad"]!,
-                                      style: const TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Text("Pendiente", style: TextStyle(color: Colors.green))
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                  ? const MyCoursesWidget()
+                  : const MyAppointmentsWidget(), // reemplaza la ListView por este widget
             ),
           ],
         ),

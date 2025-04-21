@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'home_script/home_screen.dart';
+import 'home_script/widgets/home_screen_tutor.dart';
+import 'user_session.dart';
 
 class Congrats extends StatefulWidget {
   const Congrats({super.key});
@@ -61,11 +63,20 @@ class CongratsState extends State<Congrats> {
 
                 InkWell(
                   onTap: () {
-                    Navigator.push(
+                    Widget nextScreen;
+
+                    if (UserSession.role == 'tutor') {
+                      nextScreen = HomeScreenTutor();
+                    } else {
+                      nextScreen = HomeScreen(); // o HomeScreen() si esa es la pantalla para usuarios normales
+                    }
+
+                    Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => HomeScreen()),
+                      MaterialPageRoute(builder: (_) => nextScreen),
                     );
                   },
+
                   child: Container(
                     width: double.infinity,
                     padding: EdgeInsets.symmetric(vertical: 14.h),

@@ -4,6 +4,7 @@ import 'package:intl/intl_standalone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tutorly/user_session.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:tutorly/detalles_pedido.dart';
 
 
 void main() {
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         courseId: '9ocu4dVB7ea8W65vmrem',
         tutorId: 'andres.rojas@gmail.com',
         courseName: 'GDEV 101',
+        price: 30.0,
         //availableDays: ['Lunes']
       ),
     );
@@ -34,6 +36,8 @@ class ScheduleScreen extends StatefulWidget {
   final String courseId;
   final String tutorId;
   final String courseName;
+  final double price;
+
   //final List<String> availableDays;
   final VoidCallback? onScheduled; // Nuevo parámetro opcional
 
@@ -42,6 +46,8 @@ class ScheduleScreen extends StatefulWidget {
     required this.courseId,
     required this.tutorId,
     required this.courseName,
+    required this.price,
+
     //required this.availableDays,
     this.onScheduled,
   }) : super(key: key);
@@ -159,78 +165,96 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       }
     }
   }
+  
 
-Future<void> _saveAppointment() async {
-  if (_selectedDate == null || _startTime == null || _endTime == null) {
-    print('Fecha o hora no seleccionada');
-    return;
-  }
+  Future<void> _saveAppointment() async {
+    if (_selectedDate == null || _startTime == null || _endTime == null) {
+      print('Fecha o hora no seleccionada');
+      return;
+    }
 
-  final startDateTime = DateTime(
-    _selectedDate!.year,
-    _selectedDate!.month,
-    _selectedDate!.day,
-    _startTime!.hour,
-    _startTime!.minute,
-  );
-
-  final endDateTime = DateTime(
-    _selectedDate!.year,
-    _selectedDate!.month,
-    _selectedDate!.day,
-    _endTime!.hour,
-    _endTime!.minute,
-  );
-
-  // Verificar si ya existe una cita a esa hora
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('appointments')
-      .where('startTime', isEqualTo: Timestamp.fromDate(startDateTime.toLocal()))
-      .where('tutorId', isEqualTo: widget.tutorId)
-      .get();
-
-  if (querySnapshot.docs.isNotEmpty) {
-    // Si ya existe una cita, mostrar un mensaje
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ya existe una cita a esa hora, por favor elige otra hora.')),
+    final startDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _startTime!.hour,
+      _startTime!.minute,
     );
-    return;  // No continuar guardando la cita
-  }
 
-  // Si no existe una cita a esa hora, guardar la nueva cita
-  final appointment = {
-    'courseId': widget.courseId,
-    'courseName': widget.courseName,
-    'tutorId': widget.tutorId,
-    'studentEmail': UserSession.email,
-    'studentName': UserSession.fullName,
-    'isOnline': _isOnline,
-    'location': _isOnline ? null : _locationController.text.trim(),
-    'date': Timestamp.fromDate(_selectedDate!),
-    'startTime': Timestamp.fromDate(startDateTime.toLocal()),
-    'endTime': Timestamp.fromDate(endDateTime.toLocal()),
-    'status': 'scheduled',
-  };
-
-  try {
-    await FirebaseFirestore.instance.collection('appointments').add(appointment).then((docRef) {
-      print("✅ ¡Cita registrada correctamente! ID: ${docRef.id}");
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Tutoría programada con éxito')),
+    final endDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _endTime!.hour,
+      _endTime!.minute,
     );
-    // Llama al callback si se definió
-    widget.onScheduled?.call();
-    Navigator.of(context).pop();
-  } catch (e) {
-    print('Error al guardar la tutoría: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Error al guardar la tutoría')),
-    );
-  }
-}
 
+    // Verificar si ya existe una cita a esa hora
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('appointments')
+        .where('startTime', isEqualTo: Timestamp.fromDate(startDateTime.toLocal()))
+        .where('tutorId', isEqualTo: widget.tutorId)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // Si ya existe una cita, mostrar un mensaje
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ya existe una cita a esa hora, por favor elige otra hora.')),
+      );
+      return;  // No continuar guardando la cita
+    }
+
+    // Si no existe una cita a esa hora, guardar la nueva cita
+    final appointment = {
+      'courseId': widget.courseId,
+      'courseName': widget.courseName,
+      'tutorId': widget.tutorId,
+      'studentEmail': UserSession.email,
+      'studentName': UserSession.fullName,
+      'isOnline': _isOnline,
+      'location': _isOnline ? null : _locationController.text.trim(),
+      'date': Timestamp.fromDate(_selectedDate!),
+      'startTime': Timestamp.fromDate(startDateTime.toLocal()),
+      'endTime': Timestamp.fromDate(endDateTime.toLocal()),
+      'status': 'scheduled',
+    };
+
+    try {
+      await FirebaseFirestore.instance.collection('appointments').add(appointment).then((docRef) {
+        print("✅ ¡Cita registrada correctamente! ID: ${docRef.id}");
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tutoría programada con éxito')),
+      );
+      // Llama al callback si se definió
+      widget.onScheduled?.call();
+      //Navigator.of(context).pop();
+
+      
+      final durationInMinutes = endDateTime.difference(startDateTime).inMinutes;
+      final double hours = durationInMinutes / 60;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DetallesPedido(
+            horasSeleccionadas: hours,
+            // pricePerHour: widget.price, // Puedes pasar este si lo necesitas también
+          ),
+        ),
+      );
+
+
+    } catch (e) {
+      print('Error al guardar la tutoría: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al guardar la tutoría')),
+      );
+    }
+    
+  }
+  
 
 
   @override

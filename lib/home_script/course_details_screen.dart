@@ -14,6 +14,7 @@ class CourseDetailsScreen extends StatelessWidget {
     final description = courseData['description'] ?? 'Sin descripción';
     final image = courseData['image'] ?? 'assets/clase.jpg';
     final rating = courseData['rating'] ?? 0.0;
+    final price = courseData['originalPrice']?.toDouble() ?? 0.0;
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -157,7 +158,7 @@ class CourseDetailsScreen extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    Text('\$${tutor['minPrice'] ?? 0}', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Text('$price', style: TextStyle(fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                                 SizedBox(height: 12),
@@ -170,6 +171,7 @@ class CourseDetailsScreen extends StatelessWidget {
                                           courseId: courseData['id']?.toString() ?? 'defaultId', // Proporciona un valor por defecto
                                           courseName: courseData['title'] ?? 'Sin título', // Proporciona un valor por defecto
                                           tutorId: tutorId,
+                                          price: price,
                                         ),
                                       ),
                                     );

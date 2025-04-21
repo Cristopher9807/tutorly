@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tutorly/user_session.dart';
+import 'terms_conditions_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -40,8 +42,13 @@ class ProfileScreen extends StatelessWidget {
                 ]),
                 const SizedBox(height: 10),
                 _buildOptionsSection(context, [
-                  _buildOptionItem(context, Icons.article_outlined, "Términos & Condiciones", const Placeholder()),
-                  _buildOptionItem(context, Icons.privacy_tip_outlined, "Política de privacidad", const Placeholder()),
+                  _buildOptionItem(
+                    context, 
+                    Icons.article_outlined, 
+                    "Términos & Condiciones", 
+                    const TermsConditionsScreen() // Aquí cambiamos el Placeholder por TermsConditionsScreen
+                  ),
+                  _buildOptionItem(context, Icons.privacy_tip_outlined, "Política de privacidad", const PrivacyPolicyScreen()),
                 ]),
                 const SizedBox(height: 10),
                 _buildOptionsSection(context, [
@@ -67,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               const CircleAvatar(
                 radius: 35,
-                backgroundImage: NetworkImage("https://randomuser.me/api/portraits/women/44.jpg"),
+                backgroundImage: AssetImage("assets/user.png"),
               ),
               const SizedBox(width: 15),
               Expanded(

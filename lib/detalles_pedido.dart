@@ -1,12 +1,10 @@
-// Archivo: DetallesPedido.dart
 import 'package:flutter/material.dart';
 import 'package:tutorly/home_script/menu/perfil.dart';
 import 'dart:math';
 import 'package:tutorly/payment_screen.dart' as pantalla_pago;
 
-
 class DetallesPedido extends StatefulWidget {
-  final int horasSeleccionadas;
+  final double horasSeleccionadas;
 
   const DetallesPedido({Key? key, required this.horasSeleccionadas}) : super(key: key);
 
@@ -15,7 +13,6 @@ class DetallesPedido extends StatefulWidget {
 }
 
 class _DetallesPedidoState extends State<DetallesPedido> {
-  bool showPromoDialog = false;
   bool promoAplicado = false;
   String promoCode = '';
 
@@ -29,7 +26,7 @@ class _DetallesPedidoState extends State<DetallesPedido> {
   }
 
   void calcularDescuento() {
-    int horas = widget.horasSeleccionadas;
+    double horas = widget.horasSeleccionadas;
     double subtotal = horas * precioPorHora;
 
     if (horas > 10) {
@@ -45,7 +42,7 @@ class _DetallesPedidoState extends State<DetallesPedido> {
 
   @override
   Widget build(BuildContext context) {
-    int horas = widget.horasSeleccionadas;
+    double horas = widget.horasSeleccionadas;
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     double subtotal = horas * precioPorHora;
@@ -78,7 +75,7 @@ class _DetallesPedidoState extends State<DetallesPedido> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Sesión en línea de $horas hora${horas > 1 ? 's' : ''}',
+                      Text('Sesión en línea de $horas hora${horas.round() > 1 ? 's' : ''}',
                           style: const TextStyle(fontSize: 16)),
                       const SizedBox(height: 8),
                       detalleFila('Subtotal', '\$${subtotal.toStringAsFixed(2)}'),
@@ -102,7 +99,7 @@ class _DetallesPedidoState extends State<DetallesPedido> {
                           const Text('¿Tienes un código promocional?'),
                           const Spacer(),
                           GestureDetector(
-                            onTap: () => setState(() => showPromoDialog = true),
+                            onTap: () => mostrarDialogoPromocional(context),
                             child: const Text('Aplicar aquí',
                                 style: TextStyle(color: Colors.blue)),
                           ),
@@ -144,34 +141,6 @@ class _DetallesPedidoState extends State<DetallesPedido> {
                           )
                         ],
                       ),
-                      if (showPromoDialog)
-                        AlertDialog(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)),
-                          title: const Text('Código promocional'),
-                          content: TextField(
-                            onChanged: (value) => promoCode = value,
-                            decoration:
-                                const InputDecoration(hintText: 'Promo123'),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => setState(() => showPromoDialog = false),
-                              child: const Text('Cancelar'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (promoCode == 'Promo123') {
-                                  setState(() {
-                                    promoAplicado = true;
-                                    showPromoDialog = false;
-                                  });
-                                }
-                              },
-                              child: const Text('Aplicar código'),
-                            )
-                          ],
-                        )
                     ],
                   ),
                 ),
@@ -179,6 +148,37 @@ class _DetallesPedidoState extends State<DetallesPedido> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void mostrarDialogoPromocional(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Código promocional'),
+        content: TextField(
+          onChanged: (value) => promoCode = value,
+          decoration: const InputDecoration(hintText: 'Promo123'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (promoCode == 'Promo123') {
+                setState(() {
+                  promoAplicado = true;
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Aplicar código'),
+          )
+        ],
       ),
     );
   }
