@@ -1,40 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈 Agregado
 import 'package:tutorly/Onboarding1.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'congrats.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'user_session.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart'; // 👈 Import necesario
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Inicializa Firebase
   await Firebase.initializeApp();
-
-  // Inicializa los datos de localización
-  await initializeDateFormatting('es_ES', null); // 👈 Esto es crítico
-  print(DateFormat.yMMMMEEEEd('es_ES').format(DateTime.now()));
-
-  // Establece locale por defecto
+  await initializeDateFormatting('es_ES', null);
   Intl.defaultLocale = 'es_ES';
 
-  // Verifica si hay un usuario autenticado
   User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     UserSession.fromFirebase(user);
   }
 
-  runApp(MainApp(initialRoute: user != null ? '/home' : '/'));
-  
+  runApp(
+    ScreenUtilInit(
+      designSize: Size(375, 812),
+      builder: (_, __) => MainApp(initialRoute: user != null ? '/home' : '/'),
+    ),
+  );
 }
-
 
 class MainApp extends StatelessWidget {
   final String initialRoute;
   const MainApp({super.key, required this.initialRoute});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,14 +39,11 @@ class MainApp extends StatelessWidget {
       initialRoute: initialRoute,
       routes: {
         '/': (context) => Onboarding1(),
-        '/Congrats': (context) => Congrats(), 
+        '/Congrats': (context) => Congrats(),
       },
     );
   }
 }
-
-
-
 
 
 
@@ -103,7 +96,7 @@ class MainApp extends StatelessWidget {
 
 /*import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:tutorly/home_script/widgets/home_screen_tutor.dart';
+import 'verify_email_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -119,10 +112,9 @@ class TutorlyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tutorly',
       debugShowCheckedModeBanner: false,
-      home: const HomeScreenTutor(), // Solo mostramos esta pantalla
+      home: const VerifyEmailScreen(), // Solo mostramos esta pantalla
     );
   }
-}
+}*/
 
 
-*/

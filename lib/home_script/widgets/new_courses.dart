@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tutorly/congrats.dart';
 
 class BestNewCourses extends StatelessWidget {
@@ -36,39 +37,39 @@ class BestNewCourses extends StatelessWidget {
   ];
 
   @override
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, top: 20.0, bottom: 10.0),
+      padding: EdgeInsets.only(left: 16.w, top: 20.h, bottom: 10.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribuye los elementos horizontalmente
             children: [
-              const Text(
-                'Los mejores cursos nuevos',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Expanded(
+                child: Text(
+                  'Los mejores cursos nuevos',
+                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                ),
               ),
               TextButton(
                 onPressed: () {
-                  // Navega a otra pantalla
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Congrats()), // Define la nueva pantalla aquí
+                    MaterialPageRoute(builder: (context) => const Congrats()),
                   );
                 },
-                child: const Text(
+                child: Text(
                   'Todas las materias >',
-                  style: TextStyle(fontSize: 14, color: Colors.blue), // Estilo azul del texto
+                  style: TextStyle(fontSize: 14.sp, color: Colors.blue),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           SizedBox(
-            height: 230, // Espacio suficiente para mostrar las tarjetas
+            height: 230.h,
             child: ListView.builder(
-              scrollDirection: Axis.horizontal, // Scroll horizontal
+              scrollDirection: Axis.horizontal,
               itemCount: courses.length,
               itemBuilder: (context, index) {
                 return _buildCourseCard(courses[index]);
@@ -79,18 +80,19 @@ class BestNewCourses extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildCourseCard(Map<String, dynamic> course) {
     return Container(
-      width: 180, // 📌 Ancho de cada tarjeta
-      margin: const EdgeInsets.only(right: 10),
+      width: 180.w,
+      margin: EdgeInsets.only(right: 10.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            blurRadius: 6.r,
+            offset: Offset(0, 3),
           ),
         ],
       ),
@@ -98,47 +100,57 @@ class BestNewCourses extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)), 
+            borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
             child: Image.network(
-              course["image"], 
-              height: 100, // 🔹 Altura de la imagen
+              course["image"],
+              height: 100.h,
               width: double.infinity,
-              fit: BoxFit.cover, 
+              fit: BoxFit.cover,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0), 
+            padding: EdgeInsets.all(10.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   course["title"],
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   '${course["instructor"]} • ${course["duration"]}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 12.sp, color: Colors.grey),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('\$${course["price"]}', 
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      '\$${course["price"]}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     if (course["originalPrice"] > course["price"])
-                      Text('\$${course["originalPrice"]}',
-                        style: const TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey),
+                      Text(
+                        '\$${course["originalPrice"]}',
+                        style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          color: Colors.grey,
+                          fontSize: 12.sp,
+                        ),
                       ),
                   ],
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
-                    Text('${course["rating"]} (${course["numRatings"]})', style: const TextStyle(fontSize: 12)),
+                    Icon(Icons.star, color: Colors.amber, size: 16.sp),
+                    SizedBox(width: 4.w),
+                    Text(
+                      '${course["rating"]} (${course["numRatings"]})',
+                      style: TextStyle(fontSize: 12.sp),
+                    ),
                   ],
                 ),
               ],

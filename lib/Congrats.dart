@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'home_script/home_screen.dart';
 
 class Congrats extends StatefulWidget {
@@ -11,70 +12,66 @@ class Congrats extends StatefulWidget {
 class CongratsState extends State<Congrats> {
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: const Size(375, 812));
+
     return Scaffold(
       body: SafeArea(
-        // Permite que el contenido sea desplazable en pantallas pequeñas
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
             child: Column(
               children: [
-                // Imagen de confeti
                 SizedBox(
                   width: double.infinity,
                   child: Image.network(
-                    "https://storage.googleapis.com/tagjs-prod.appspot.com/VuZ5hgGxQ3/r21o6dv4.png", 
+                    "https://storage.googleapis.com/tagjs-prod.appspot.com/VuZ5hgGxQ3/r21o6dv4.png",
                     fit: BoxFit.contain,
                   ),
                 ),
-                const SizedBox(height: 20),
-                
-                // Check verde
+                SizedBox(height: 20.h),
+
                 SizedBox(
-                  width: 100,
-                  height: 100,
+                  width: 100.w,
+                  height: 100.w,
                   child: Image.asset(
-                  'assets/circle.png', 
-                  fit: BoxFit.fill,
+                    'assets/circle.png',
+                    fit: BoxFit.fill,
+                  ),
                 ),
-                ),
-                const SizedBox(height: 20),
-                
-                // Texto "¡Felicitaciones!"
-                const Text(
+                SizedBox(height: 20.h),
+
+                Text(
                   "¡Felicitaciones!",
                   style: TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 18,
+                    color: const Color(0xFF0F172A),
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 14),
-                
-                // Texto de descripción
-                const Text(
+                SizedBox(height: 14.h),
+
+                Text(
                   "Has ingresado correctamente. Ve a la página de inicio y empieza a explorar los cursos.",
                   style: TextStyle(
-                    color: Color(0xFF475569),
-                    fontSize: 14,
+                    color: const Color(0xFF475569),
+                    fontSize: 14.sp,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 40),
-                
-                // Botón "Ir a Inicio" (comentado la navegación)
+                SizedBox(height: 40.h),
+
                 InkWell(
                   onTap: () {
                     Navigator.push(
-                       context,
-                       MaterialPageRoute(builder: (_) => HomeScreen()),
-                     );
+                      context,
+                      MaterialPageRoute(builder: (_) => HomeScreen()),
+                    );
                   },
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                       color: const Color(0xFF0760FB),
                       boxShadow: const [
                         BoxShadow(
@@ -84,22 +81,21 @@ class CongratsState extends State<Congrats> {
                         ),
                       ],
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         "Ir a Inicio",
                         style: TextStyle(
-                          color: Color(0xFFFFFFFF),
-                          fontSize: 14,
+                          color: const Color(0xFFFFFFFF),
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
 
-               
-                const SizedBox(height: 20),
+                SizedBox(height: 30.h),
+                SizedBox(height: 20.h),
               ],
             ),
           ),

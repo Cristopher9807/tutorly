@@ -29,6 +29,7 @@ class UploadPhotoState extends State<UploadPhoto> {
 
   Future<void> _registerUser() async {
     try {
+
       // Crear usuario en Firebase Authentication
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: UserSession.email!,
@@ -61,7 +62,12 @@ class UploadPhotoState extends State<UploadPhoto> {
         'university': UserSession.university,
         'specialty': UserSession.specialty,
         'universityId': UserSession.universityId,
+
+        
       });
+
+     
+
 
       debugPrint("✅ Usuario registrado correctamente en Auth y Firestore");
 
@@ -138,7 +144,7 @@ class UploadPhotoState extends State<UploadPhoto> {
                       ? ClipOval(child: Image.file(_image!, fit: BoxFit.cover))
                       : const Center(
                           child: Text(
-                            "Haz clic en el círculo\npara cargar tu foto",
+                            "Haz clic en el círculo para cargar tu foto",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.black,
